@@ -1,1 +1,1 @@
-__all__ = ["discowclient", "getkey"]
+__all__ = ["client", "getkey"]

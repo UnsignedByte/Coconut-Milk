@@ -2,12 +2,12 @@
 # @Date:   19:01:44, 02-Apr-2018
 # @Filename: help.py
 # @Last modified by:   edl
-# @Last modified time: 17:12:29, 04-Nov-2018
+# @Last modified time: 22:22:13, 09-Oct-2019
 
 
 import asyncio
 from discord import Embed
-from discow.handlers import add_message_handler, add_private_message_handler
+from bot.handlers import add_message_handler, add_private_message_handler, bot_prefix
 from collections import OrderedDict
 
 print("\tInitializing Help Command")
@@ -40,7 +40,7 @@ first = True
 for key, value in helpvals.items():
     if first:
         helpembed.title = key
-        helpembed.description = '\n'.join(map(lambda x:x.lstrip(">").strip(), value))+'\n\nTo display another page, do `cow help {page number}`. For more help, take a look at [the Readme](https://github.com/UnsignedByte/discow/blob/master/README.md) on our [github repository](https://github.com/UnsignedByte/discow)!'
+        helpembed.description = '\n'.join(map(lambda x:x.lstrip(">").strip(), value))+'\n\nTo display another page, do `{}help {{page number}}`. For more help, take a look at [the Readme](https://github.com/UnsignedByte/Persimmon/blob/master/README.md) on our [github repository](https://github.com/UnsignedByte/Persimmon)!'.format(bot_prefix)
         first = False
     else:
         stoadd = "\n\n# "+key+'\n\n'+'\n'.join(value)
@@ -52,13 +52,11 @@ for key, value in helpvals.items():
 print("\t\tFinished Parsing")
 helpembed.add_field(name='\a', value=desc+'```')
 
-async def gethelp(Bot, msg):
-    await Bot.send_message(msg.channel, "Sent you command information!")
-    await Bot.send_message(msg.author, embed=helpembed)
+async def help(Bot, msg, reg):
+    await msg.channel.send("Sent you command information!")
+    await msg.author.send(embed=helpembed)
 
 
-add_message_handler(gethelp, "commands")
-add_message_handler(gethelp, "help")
-add_private_message_handler(gethelp, "commands")
-add_private_message_handler(gethelp, "help")
+add_message_handler(help, r'(?:help|commands)')
+add_private_message_handler(help, r'(?:help|commands)')
 print("\tHelp Command Initialized")

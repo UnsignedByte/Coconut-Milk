@@ -2,12 +2,12 @@
 # @Date:   06:50:24, 02-May-2018
 # @Filename: handlers.py
 # @Last modified by:   edl
-# @Last modified time: 21:49:30, 09-Oct-2019
+# @Last modified time: 22:11:06, 09-Oct-2019
 
 bot_data = {}
 bot_prefix = '.'
 message_handlers = {}
-bot_message_handlers = {}
+private_message_handlers = {}
 
 import re
 import os
@@ -45,6 +45,7 @@ def nested_set(value, *keys):
     for key in keys[:-1]:
         dic = dic.setdefault(key, {})
     dic[keys[-1]] = value
+    print(bot_data);
 
 def nested_pop(*keys):
     nested_get(*keys[:-1]).pop(keys[-1], None)
@@ -74,7 +75,7 @@ async def on_message(bot, msg):
         c = msg.channel;
         try:
             for a in message_handlers:
-                reg = re.compile(a, re.I).match(msg.content)
+                reg = re.compile(a).match(msg.content)
                 if reg:
                     commandname = message_handlers[a].__name__;
                     if cmdutils.allowed_command(commandname,c):
