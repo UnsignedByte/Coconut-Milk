@@ -2,7 +2,7 @@
 # @Date:   06:50:24, 02-May-2018
 # @Filename: handlers.py
 # @Last modified by:   edl
-# @Last modified time: 22:48:56, 09-Oct-2019
+# @Last modified time: 23:04:37, 09-Oct-2019
 
 bot_data = {}
 bot_prefix = '.'
@@ -49,18 +49,21 @@ async def on_message(bot, msg):
     if not msg.author.bot:
         c = msg.channel;
         try:
-            for a in message_handlers:
-                reg = re.compile(a).match(msg.content)
-                if reg:
-                    commandname = message_handlers[a].__name__;
-                    if cmdutils.allowed_command(commandname,c):
-                        if isinstance(c, discord.abc.PrivateChannel):
-                            await c.send("Commands are not supported for private channels")
-                            return
-                        await message_handlers[a](bot, msg, reg)
-                        break
-                    else:
-                        await c.send('The {} command is disabled in this channel.'.format(commandname))
+            if isinstance(c, discord.abc.PrivateChannel):
+                for a in private_message_handlers:
+                    reg = re.compile(a).match(msg.content)
+                    if reg:
+                        await private_message_handlers[a](bot, msg, reg)
+            else:
+                for a in message_handlers:
+                    reg = re.compile(a).match(msg.content)
+                    if reg:
+                        commandname = message_handlers[a].__name__;
+                        if cmdutils.allowed_command(commandname,c):
+                            await message_handlers[a](bot, msg, reg)
+                            break
+                        else:
+                            await c.send('The {} command is disabled in this channel.'.format(commandname))
         except Exception as e:
             em = discord.Embed(title="Unknown Error",
                                description="An unknown error occurred. Trace:\n%s" % e, colour=0xd32323)
