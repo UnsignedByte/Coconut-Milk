@@ -2,17 +2,17 @@
 # @Date:   06:50:24, 02-May-2018
 # @Filename: handlers.py
 # @Last modified by:   edl
-# @Last modified time: 16:56:22, 08-Oct-2019
+# @Last modified time: 18:25:15, 09-Oct-2019
 
 bot_data = {}
-bot_prefix = "."
+bot_prefix = '.'
 
 import re
 import os
 import pickle
 from random import randint
 from shutil import copyfile
-from bot.utils import data
+from bot.utils import datautils, msgutils
 import discord
 
 print("Begin Handler Initialization")
@@ -26,7 +26,7 @@ closing = False
 if not os.path.exists("data/backup/"):
     os.makedirs("data/backup/")
 
-bot_data = data.load_data_file('data.txt');
+bot_data = datautils.load_data_file('data.txt');
 
 print("\tLoaded files")
 
@@ -44,8 +44,17 @@ def enable_command(cmd, channels):
 
 
 def add_message_handler(handler, keyword):
-    message_handlers[keyword] = handler
+    formatreg = {
+        'channel_mention': r'<#[0-9]+>',
+        'user_mention': r'<@!?[0-9]+>',
+        'role_mention': r'<@&[0-9]+>',
+    }
+    for i in formatreg:
+        keyword = keyword.replace(i, formatreg[i])
 
+    keyword = keyword.replace(' ', '\s*') # allow all whitespace
+    keyword = re.escape(bot_prefix)+keyword+r'\Z' #Make sure command ends at end of match
+    message_handlers[keyword] = handler
 
 def add_private_message_handler(handler, keyword):
     private_message_handlers[keyword] = handler
@@ -91,21 +100,21 @@ async def on_message(bot, msg):
                 reg = re.compile(a, re.I).match(msg.content)
                 if reg:
                     c = msg.channel;
-                    if c.is_private:
-                        await c.send("This bot doesn't work in private channels")
+                    if isinstance(c, discord.abc.PrivateChannel):
+                        await c.send("Commands are not supported for private channels")
                         return
-                    await message_handlers[a](Demobot, msg, reg)
+                    await message_handlers[a](bot, msg, reg)
                     break
         except Exception as e:
             em = discord.Embed(title="Unknown Error",
                                description="An unknown error occurred. Trace:\n%s" % e, colour=0xd32323)
-            await send_embed(Demobot, msg, em)
+            await msgutils.send_embed(bot, msg, em)
             traceback.print_tb(e.__traceback__)
 
 async def timed_save(Bot):
     while True:
         await asyncio.sleep(60)
-        await message_handlers["save"](Bot, None, overrideperms=True)
+        # await message_handlers["save"](Bot, None, overrideperms=True)
         try:
             copyfile('data/data.txt', 'data/backup/data.txt')
         except Exception as e:

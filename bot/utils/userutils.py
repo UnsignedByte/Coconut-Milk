@@ -2,10 +2,10 @@
 # @Date:   20:17:56, 04-Nov-2018
 # @Filename: memberutils.py
 # @Last modified by:   edl
-# @Last modified time: 16:55:24, 08-Oct-2019
+# @Last modified time: 16:14:15, 09-Oct-2019
 
 import asyncio
-from bot.utils import data
+from bot.utils import datautils
 import discord
 
 async def get_owner(Bot):

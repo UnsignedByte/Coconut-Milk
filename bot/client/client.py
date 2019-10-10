@@ -14,8 +14,8 @@ logger.addHandler(handler)
 
 class BotClientClass(discord.Client):
     async def on_ready(self):
-        await self.change_presence(game=discord.Game(name='.help', url='https://github.com/UnsignedByte/Coconut-Milk', type=2))
-        await asyncio.gather(bot.handlers.timed_msg(self), bot.handlers.timed_save(self))
+        await self.change_presence(activity=discord.Activity(name='.help', url='https://github.com/UnsignedByte/Persimmon', type=discord.ActivityType.listening))
+        await bot.handlers.timed_save(self)
     async def on_message(self, message):
         await bot.handlers.on_message(self, message)
     async def on_message_edit(self, before, after):
