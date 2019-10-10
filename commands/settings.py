@@ -2,7 +2,7 @@
 # @Date:   11:04:49, 05-Apr-2018
 # @Filename: settings.py
 # @Last modified by:   edl
-# @Last modified time: 22:21:22, 09-Oct-2019
+# @Last modified time: 22:24:45, 09-Oct-2019
 
 
 import asyncio
@@ -25,5 +25,6 @@ async def settings(bot, msg, reg):
             channels = msg.channel_mentions
         for channel in channels:
             nested_set(sub == 'disable', 'guilds', msg.guild.id, 'channels', channel.id, 'commands', command)
+        await msg.channel.send('Command `{}` has been disabled in {}'.format(command ,', '.join(map(lambda x:x.mention, channels))))
 
 add_message_handler(settings, r'settings (?P<sub>enable|disable) (?P<command>.+?) (?P<channels>all|(?:channel_mention )+)')

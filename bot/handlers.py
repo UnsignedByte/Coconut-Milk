@@ -2,7 +2,7 @@
 # @Date:   06:50:24, 02-May-2018
 # @Filename: handlers.py
 # @Last modified by:   edl
-# @Last modified time: 22:11:06, 09-Oct-2019
+# @Last modified time: 22:26:11, 09-Oct-2019
 
 bot_data = {}
 bot_prefix = '.'
@@ -45,7 +45,6 @@ def nested_set(value, *keys):
     for key in keys[:-1]:
         dic = dic.setdefault(key, {})
     dic[keys[-1]] = value
-    print(bot_data);
 
 def nested_pop(*keys):
     nested_get(*keys[:-1]).pop(keys[-1], None)
