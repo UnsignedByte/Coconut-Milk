@@ -2,11 +2,11 @@
 # @Date:   11:04:49, 05-Apr-2018
 # @Filename: settings.py
 # @Last modified by:   edl
-# @Last modified time: 18:26:26, 09-Oct-2019
+# @Last modified time: 21:46:34, 09-Oct-2019
 
 
 import asyncio
-from bot.utils import msgutils, strutils, commandutils
+from bot.utils import msgutils, strutils, cmdutils
 from bot.handlers import add_message_handler, nested_set
 from discord import Embed, ChannelType
 

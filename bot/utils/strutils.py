@@ -2,7 +2,7 @@
 # @Date:   10:01:28, 03-Nov-2018
 # @Filename: strutils.py
 # @Last modified by:   edl
-# @Last modified time: 15:23:20, 08-Oct-2019
+# @Last modified time: 21:43:42, 09-Oct-2019
 
 from bot.handlers import bot_prefix
 import re
@@ -20,32 +20,18 @@ def format_response(string, **kwargs):
 
     return string.format(**kwargs)
 
-def parse_command(msg, num=-1):
-    cont = msg[len(bot_prefix):].split(" ")
-    if num is not -1:
-        if len(cont)<num+1:
-            raise IndexError("Not enough inputs")
-        else:
-            return cont[:num]+[' '.join(cont[num:])]
-    else:
-        return cont
+def format_regex(keyword):
+    formatreg = {
+        'channel_mention': r'<#[0-9]+>',
+        'user_mention': r'<@!?[0-9]+>',
+        'role_mention': r'<@&[0-9]+>',
+    }
+    for i in formatreg:
+        keyword = keyword.replace(i, formatreg[i])
 
-def strip_command(msg):
-    return parse_command(msg, 1)[1]
-
-def split_str_chunks(content, maxlen, prefix='', suffix=''):
-    clist = []
-    cchunk = ""
-    for l in content.splitlines():
-        if len(cchunk)+len(l)> maxlen-len(prefix)-len(suffix):
-            clist.append(prefix+cchunk+suffix)
-            cchunk = ""
-        while len(l) > maxlen-len(prefix)-len(suffix):
-            clist.append(prefix+l[:maxlen-len(prefix)-len(suffix)]+suffix)
-            l = l[maxlen-len(prefix)-len(suffix):]
-        cchunk+=l+"\n"
-    clist.append(prefix+cchunk+suffix)
-    return clist
+    keyword = keyword.replace(' ', '\s*') # allow all whitespace
+    keyword = re.escape(bot_prefix)+keyword+r'\Z' #Make sure command ends at end of match
+    return keyword
 
 def escape_markdown(s):
     return re.sub(r'(?:`|\(|\\|\[|\]|\)|\*|~|_)', r'\\\g<0>', s)
