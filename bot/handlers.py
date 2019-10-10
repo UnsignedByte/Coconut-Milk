@@ -2,7 +2,7 @@
 # @Date:   06:50:24, 02-May-2018
 # @Filename: handlers.py
 # @Last modified by:   edl
-# @Last modified time: 22:26:11, 09-Oct-2019
+# @Last modified time: 22:48:56, 09-Oct-2019
 
 bot_data = {}
 bot_prefix = '.'
@@ -35,35 +35,11 @@ def add_message_handler(handler, keyword):
 def add_private_message_handler(handler, keyword):
     private_message_handlers[strutils.format_regex(keyword)] = handler
 
-def get_data():
-    return [bot_data]
-
-# dict utilities
-
-def nested_set(value, *keys):
-    dic = bot_data
-    for key in keys[:-1]:
-        dic = dic.setdefault(key, {})
-    dic[keys[-1]] = value
-
-def nested_pop(*keys):
-    nested_get(*keys[:-1]).pop(keys[-1], None)
-
-def alt_pop(key, *keys):
-    nested_get(*keys).pop(key)
-
-
-def nested_get(*keys):
-    dic = bot_data
-    for key in keys:
-        dic=dic.setdefault( key, {} )
-    return dic
-
 print("Handler initialized")
 print("Begin Command Initialization")
 # Add modules here
-from commands import *
 from bot.utils import cmdutils
+from commands import *
 print("Command Initialization Finished")
 
 import asyncio

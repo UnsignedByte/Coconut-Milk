@@ -2,7 +2,7 @@
 # @Date:   10:01:28, 03-Nov-2018
 # @Filename: strutils.py
 # @Last modified by:   edl
-# @Last modified time: 21:43:42, 09-Oct-2019
+# @Last modified time: 22:48:23, 09-Oct-2019
 
 from bot.handlers import bot_prefix
 import re
@@ -32,6 +32,20 @@ def format_regex(keyword):
     keyword = keyword.replace(' ', '\s*') # allow all whitespace
     keyword = re.escape(bot_prefix)+keyword+r'\Z' #Make sure command ends at end of match
     return keyword
+
+def split_str_chunks(content, maxlen, prefix='', suffix=''):
+    clist = []
+    cchunk = ""
+    for l in content.splitlines():
+        if len(cchunk)+len(l)> maxlen-len(prefix)-len(suffix):
+            clist.append(prefix+cchunk+suffix)
+            cchunk = ""
+        while len(l) > maxlen-len(prefix)-len(suffix):
+            clist.append(prefix+l[:maxlen-len(prefix)-len(suffix)]+suffix)
+            l = l[maxlen-len(prefix)-len(suffix):]
+        cchunk+=l+"\n"
+    clist.append(prefix+cchunk+suffix)
+    return clist
 
 def escape_markdown(s):
     return re.sub(r'(?:`|\(|\\|\[|\]|\)|\*|~|_)', r'\\\g<0>', s)
