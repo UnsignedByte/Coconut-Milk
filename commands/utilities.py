@@ -2,7 +2,7 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 22:34:25, 09-Oct-2019
+# @Last modified time: 22:55:21, 09-Oct-2019
 
 from pprint import pformat
 import asyncio
@@ -16,15 +16,14 @@ import traceback
 from bs4 import BeautifulSoup
 import greenlet
 
-async def info(bot, msg):
+async def info(bot, msg, reg):
     em = Embed(title="Who am I?", colour=0x9542f4)
-    em.description = "Hi, I'm [discow](https://github.com/UnsignedByte/discow), a discord bot created by <@418827664304898048>.\nOn this server, I am known as "+nickname(bot.user, msg.server)+'.'
-    em.add_field(name="Features", value="For information about my features do `"+discow_prefix+"help` or take a look at [our readme](https://github.com/UnsignedByte/discow/blob/master/README.md)!")
+    em.description = "Hi, I'm [Persimmon](https://github.com/UnsignedByte/Persimmon), a discord bot created by <@418827664304898048>.\nOn this server, I am known as "+nickname(bot.user, msg.server)+'.'
+    em.add_field(name="Features", value="For information about my features do `"+bot_prefix+"help` or take a look at [our readme](https://github.com/UnsignedByte/Persimmon/blob/master/README.md)!")
     await msgutils.send_embed(bot, msg, em)
 
-async def execute(bot, msg):
-    if msg.author.id == "418827664304898048":
-
+async def execute(bot, msg, reg):
+    if msg.author == userutils.get_owner():
         #From https://stackoverflow.com/a/46087477/5844752
         class GreenAwait:
             def __init__(self, child):
@@ -59,9 +58,9 @@ async def execute(bot, msg):
         except Exception:
             await msgutils.send_embed(bot, msg, Embed(title="Output", description=traceback.format_exc(), colour=0xd32323))
 
-async def quote(bot, msg):
+async def quote(bot, msg, reg):
     try:
-        m = await bot.get_message((msg.channel if len(msg.channel_mentions) == 0 else msg.channel_mentions[0]), strutils.strutils.strip_command(msg.content).split(" ")[0])
+        m = await (msg.channel if len(msg.channel_mentions) == 0 else msg.channel_mentions[0]).send(strutils.strutils.strip_command(msg.content).split(" ")[0])
         em = Embed(title="Message Quoted by "+msg.author.display_name+":", colour=0x3b7ce5)
         desc = m.content
         print(desc)
@@ -238,19 +237,18 @@ async def removeMod(bot, msg, reg):
     else:
         await bot.send_message(msg.channel, 'You are not owner!')
 
-add_message_handler(info, "hi")
-add_message_handler(info, "info")
+add_message_handler(info, r'(?:hi|info)')
 add_message_handler(save, "save")
 add_message_handler(purge, "purge")
 add_message_handler(purge, "clear")
 add_message_handler(quote, "quote")
 add_message_handler(dictionary, "define")
 add_message_handler(dictionary, "dictionary")
-add_message_handler(execute, "exec")
-add_private_message_handler(execute, "exec")
+add_message_handler(execute, r'(exec [.\n]+))
+add_private_message_handler(execute, r'(exec [.\n]+))
 
-add_regex_message_handler(getData, r'getdata\Z')
-add_regex_message_handler(delete_data, r'(?:remove|delete)\s+(?P<path>.*)\Z')
-add_regex_message_handler(find, r'sub\s+(?P<key>.*)\Z')
-add_regex_message_handler(makeMod, r'make (?P<user><@!?(?P<userid>[0-9]+)>) mod\Z')
-add_regex_message_handler(removeMod, r'del (?P<user><@!?(?P<userid>[0-9]+)>) mod\Z')
+add_regex_message_handler(getData, r'getdata')
+add_regex_message_handler(delete_data, r'(?:remove|delete) (?P<path>.*)')
+add_regex_message_handler(find, r'sub (?P<key>.*)')
+add_regex_message_handler(makeMod, r'make (?P<user><@!?(?P<userid>[0-9]+)>) mod')
+add_regex_message_handler(removeMod, r'del (?P<user><@!?(?P<userid>[0-9]+)>) mod')
