@@ -2,7 +2,7 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 23:54:49, 10-Oct-2019
+# @Last modified time: 00:48:44, 11-Oct-2019
 
 # from pprint import pformat
 import json
@@ -135,26 +135,18 @@ async def dictionary(bot, msg):
     dictm = await msgutils.send_embed(bot, dictm, em)
 
 
-async def purge(bot, msg):
+async def purge(bot, msg, reg):
     perms = msg.channel.permissions_for(msg.author)
     if perms.manage_messages or is_mod(bot, msg.author):
-        num = int(strutils.parse_command(msg.content, 1)[1].split(' ')[0])+1
-        if num < 2:
-            await msg.channel.send("There is no reason to delete 0 messages!")
-        deletechunks = []
+        await msg.delete()
+        num = int(reg.group('num'));
         def check(message):
             return not msg.mentions or msg.mentions[0].id == message.author.id
-        try:
-            await bot.purge_from(msg.channel, limit=num, check=check)
-            m = await msg.channel.send(strutils.format_response("**{_mention}** has cleared the last **{_number}** messages!", _msg=msg, _number=num-1))
-        except HTTPException:
-            m = await msg.channel.send(strutils.format_response("You cannot bulk delete messages that are over 14 days old!!"))
-
-        await asyncio.sleep(2)
-        await bot.delete_message(m)
+        await msg.channel.purge(limit=num, check=check)
+        await msg.channel.send("**{}** has cleared the last **{}** messages!".format(msg.author.mention,num-1), delete_after=2)
     else:
         em = Embed(title="Insufficient Permissions", description=strutils.format_response("{_mention} does not have sufficient permissions to perform this task.", _msg=msg), colour=0xd32323)
-        await msgutils.send_embed(bot, msg, em)
+        await msgutils.send_embed(bot, msg, em, delete_after=2)
 
 async def save(bot, msg, reg):
     if await userutils.is_mod(bot, msg.author):
@@ -177,7 +169,6 @@ async def find(bot, msg, reg):
 async def delete(bot, msg, reg):
     if (await userutils.is_mod(bot, msg.author)):
         keys = miscutils.list2int(reg.group('path').split())
-        print(keys)
         if isinstance(datautils.nested_get(*keys[:-1]), dict):
             datautils.nested_pop(*keys)
         elif isinstance(datautils.nested_get(*keys[:-1]), list):
@@ -193,7 +184,7 @@ async def mod(bot, msg, reg):
                 datautils.nested_remove(msg.mentions[0], 'global', 'moderators')
 
 add_message_handler(info, r'hi|info')
-add_message_handler(purge, r'purge|clear')
+add_message_handler(purge, r'(?:purge|clear) (?P<num>[0-9]+) user_mention?')
 add_message_handler(dictionary, r'define|dictionary')
 
 add_private_message_handler(info, r'(?:hi|info)')

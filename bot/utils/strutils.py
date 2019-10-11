@@ -2,7 +2,7 @@
 # @Date:   10:01:28, 03-Nov-2018
 # @Filename: strutils.py
 # @Last modified by:   edl
-# @Last modified time: 11:07:19, 10-Oct-2019
+# @Last modified time: 00:08:29, 11-Oct-2019
 
 from bot.handlers import bot_prefix
 import re
@@ -22,9 +22,9 @@ def format_response(string, **kwargs):
 
 def format_regex(keyword):
     formatreg = {
-        'channel_mention': r'<#[0-9]+>',
-        'user_mention': r'<@!?[0-9]+>',
-        'role_mention': r'<@&[0-9]+>',
+        'channel_mention': r'(?:<#[0-9]+>)',
+        'user_mention': r'(?:<@!?[0-9]+>)',
+        'role_mention': r'(?:<@&[0-9]+>)',
     }
     for i in formatreg:
         keyword = keyword.replace(i, formatreg[i])

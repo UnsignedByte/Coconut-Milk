@@ -2,7 +2,7 @@
 # @Date:   10:01:53, 03-Nov-2018
 # @Filename: msgutils.py
 # @Last modified by:   edl
-# @Last modified time: 17:29:44, 10-Oct-2019
+# @Last modified time: 00:40:49, 11-Oct-2019
 
 import asyncio
 from discord import VoiceRegion, Forbidden
@@ -10,7 +10,7 @@ from bot.utils import strutils, userutils
 
 ## Usable
 
-async def send_embed(bot, msg, embed, usr=None):
+async def send_embed(bot, msg, embed, usr=None, delete_after=None):
     if not usr:
         usr = bot.user
     txt = "Created by {}.".format(userutils.nickname(usr, msg.guild))
@@ -22,7 +22,7 @@ async def send_embed(bot, msg, embed, usr=None):
         await msg.channel.send("**Missing Permissions**\nDiscow is missing permissions to send embeds.")
         return None
 
-async def edit_embed(bot, msg, embed, usr=None):
+async def edit_embed(bot, msg, embed, usr=None, delete_after=None):
     if not usr:
         usr = bot.user
     txt = "Edited by {}.".format(userutils.nickname(usr, msg.guild))
