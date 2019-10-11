@@ -2,14 +2,14 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 18:45:07, 10-Oct-2019
+# @Last modified time: 21:34:36, 10-Oct-2019
 
 # from pprint import pformat
 import json
 import asyncio
 import pickle
 from bot.utils import msgutils, strutils, datautils, userutils, objutils
-from bot.handlers import add_message_handler, add_private_message_handler
+from bot.handlers import add_message_handler, add_private_message_handler, bot_prefix
 from discord import Embed, NotFound, HTTPException
 import requests as req
 import re
@@ -19,8 +19,8 @@ import greenlet
 
 async def info(bot, msg, reg):
     em = Embed(title="Who am I?", colour=0x9542f4)
-    em.description = "Hi, I'm [Persimmon](https://github.com/UnsignedByte/Persimmon), a discord bot created by <@418827664304898048>.\nOn this server, I am known as "+nickname(bot.user, msg.server)+'.'
-    em.add_field(name="Features", value="For information about my features do `"+bot_prefix+"help` or take a look at [our readme](https://github.com/UnsignedByte/Persimmon/blob/master/README.md)!")
+    em.description = "Hi, I'm [Persimmon](https://github.com/UnsignedByte/Persimmon), a discord bot created by "+(await userutils.get_owner(bot)).mention+"."
+    em.add_field(name="Features", value="For information about my features do `"+bot_prefix+"help` or take a look at [my github](https://github.com/UnsignedByte/Persimmon/)!")
     await msgutils.send_embed(bot, msg, em)
 
 async def execute(bot, msg, reg):
@@ -58,34 +58,6 @@ async def execute(bot, msg, reg):
             out = await aexec('import asyncio\nasync def run_exec():\n\t'+'\t'.join(re.search(r'`(?P<in>``)?(?P<body>(.?\s?)*)(?(in)```|`)', msg.content).group("body").strip().splitlines(True))+'\ngawait(run_exec())')
         except Exception:
             await msgutils.send_embed(bot, msg, Embed(title="Output", description=traceback.format_exc(), colour=0xd32323))
-
-async def quote(bot, msg, reg):
-    try:
-        m = await (msg.channel if len(msg.channel_mentions) == 0 else msg.channel_mentions[0]).send(strutils.strutils.strip_command(msg.content).split(" ")[0])
-        em = Embed(title="Message Quoted by "+msg.author.display_name+":", colour=0x3b7ce5)
-        desc = m.content
-        print(desc)
-        log = reversed([a async for a in bot.logs_from(m.channel, limit=20, after=m)])
-        print(log)
-        for a in log:
-            if a.author == m.author:
-                if a.content:
-                    desc+="\n"+a.content
-            else:
-                break
-        async for a in bot.logs_from(m.channel, limit=20, before=m):
-            if a.author == m.author:
-                if a.content:
-                    desc=a.content+"\n"+desc
-            else:
-                break
-        em.description = desc
-        print(desc)
-        await bot.delete_message(msg)
-        await msgutils.send_embed(bot, msg, em, time=m.timestamp, usr=m.author)
-    except NotFound:
-        em = Embed(title="Unable to Find Message", description="Could not find a message with that id.", colour=0xd32323)
-        await msgutils.send_embed(bot, msg, em)
 
 async def dictionary(bot, msg):
     link="https://www.merriam-webster.com/dictionary/"
@@ -217,13 +189,11 @@ async def mod(bot, msg, reg):
             else:
                 datautils.nested_remove(msg.mentions[0], 'global', 'moderators')
 
-add_message_handler(info, r'(?:hi|info)')
-add_message_handler(purge, "purge")
-add_message_handler(purge, "clear")
-add_message_handler(quote, "quote")
-add_message_handler(dictionary, "define")
-add_message_handler(dictionary, "dictionary")
+add_message_handler(info, r'hi|info')
+add_message_handler(purge, r'purge|clear')
+add_message_handler(dictionary, r'define|dictionary')
 
+add_private_message_handler(info, r'(?:hi|info)')
 add_private_message_handler(save, r'save')
 add_private_message_handler(execute, r'exec [.\n]+')
 add_private_message_handler(getData, r'getdata')

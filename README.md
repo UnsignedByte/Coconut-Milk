@@ -21,7 +21,6 @@ Remember to delete `{}` and `()`.
 |save|`.save`|Save all data.|`save`|
 |settings|`.settings {args}`|Look at Settings Subcommands.|`settings`|
 |purge|`.purge {n}`|Clears the last `n` messages.|`clear`, `purge`|
-|quote|`.quote {id} (channel)`|Quotes a message given an id and an optional channel.|`quote`|
 |define|`.define {word}`|Retrieves the definition of a word from Merriam-Webster.|`define`, `dictionary`|
 |wolframalpha|`.wolframalpha {query}`|Queries wolframalpha and returns an image containing the result|`wolframalpha`, `wolfram`, `wa`|
 
