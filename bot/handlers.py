@@ -2,11 +2,11 @@
 # @Date:   06:50:24, 02-May-2018
 # @Filename: handlers.py
 # @Last modified by:   edl
-# @Last modified time: 19:01:01, 10-Oct-2019
+# @Last modified time: 15:14:31, 11-Oct-2019
 
 bot_data = {}
 bot_prefix = '.'
-message_handlers = {}
+public_message_handlers = {}
 private_message_handlers = {}
 
 import re
@@ -19,7 +19,6 @@ print("Begin Handler Initialization")
 print("\tBegin Loading Files")
 
 bot_data = datautils.load_data();
-print(bot_data)
 
 def get_data():
     return bot_data
@@ -29,11 +28,14 @@ def set_data(dat):
 
 print("\tLoaded files")
 
-def add_message_handler(handler, keyword):
-    message_handlers[strutils.format_regex(keyword)] = handler
-
-def add_private_message_handler(handler, keyword):
-    private_message_handlers[strutils.format_regex(keyword)] = handler
+class message_handler:
+    def add(handler, keyword):
+        message_handler.add_public(handler, keyword);
+        message_handler.add_private(handler, keyword);
+    def add_public(handler, keyword):
+        public_message_handlers[strutils.format_regex(keyword)] = handler
+    def add_private(handler, keyword):
+        private_message_handlers[strutils.format_regex(keyword)] = handler
 
 print("Handler initialized")
 print("Begin Command Initialization")
@@ -55,12 +57,12 @@ async def on_message(bot, msg):
                     if reg:
                         await private_message_handlers[a](bot, msg, reg)
             else:
-                for a in message_handlers:
+                for a in public_message_handlers:
                     reg = re.compile(a).match(msg.content)
                     if reg:
-                        commandname = message_handlers[a].__name__;
+                        commandname = public_message_handlers[a].__name__;
                         if cmdutils.allowed_command(commandname,c):
-                            await message_handlers[a](bot, msg, reg)
+                            await public_message_handlers[a](bot, msg, reg)
                             break
                         else:
                             await c.send('The {} command is disabled in this channel.'.format(commandname))

@@ -2,12 +2,12 @@
 # @Date:   19:01:44, 02-Apr-2018
 # @Filename: help.py
 # @Last modified by:   edl
-# @Last modified time: 22:22:13, 09-Oct-2019
+# @Last modified time: 11:20:43, 11-Oct-2019
 
 
 import asyncio
 from discord import Embed
-from bot.handlers import add_message_handler, add_private_message_handler, bot_prefix
+from bot.handlers import message_handler, bot_prefix
 from collections import OrderedDict
 
 print("\tInitializing Help Command")
@@ -57,6 +57,5 @@ async def help(Bot, msg, reg):
     await msg.author.send(embed=helpembed)
 
 
-add_message_handler(help, r'(?:help|commands)')
-add_private_message_handler(help, r'(?:help|commands)')
+message_handler.add(help, r'(?:help|commands)')
 print("\tHelp Command Initialized")

@@ -2,12 +2,12 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 11:12:16, 11-Oct-2019
+# @Last modified time: 11:21:30, 11-Oct-2019
 
 # from pprint import pformat
 import asyncio
 from bot.utils import msgutils, userutils
-from bot.handlers import add_message_handler, add_private_message_handler, bot_prefix
+from bot.handlers import message_handler, bot_prefix
 from discord import Embed, NotFound, HTTPException
 import re
 from PyDictionary import PyDictionary
@@ -29,7 +29,5 @@ async def define(bot, msg, reg):
         em.add_field(name=type, value=desc)
     await msgutils.send_embed(bot, msg, em)
 
-add_message_handler(info, r'hi|info')
-add_message_handler(define, r'(?:define|dictionary) (?P<word>.+)')
-
-add_private_message_handler(info, r'(?:hi|info)')
+message_handler.add(info, r'hi|info')
+message_handler.add(define, r'(?:define|dictionary) (?P<word>.+)')

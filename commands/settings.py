@@ -2,13 +2,13 @@
 # @Date:   11:04:49, 05-Apr-2018
 # @Filename: settings.py
 # @Last modified by:   edl
-# @Last modified time: 11:13:09, 11-Oct-2019
+# @Last modified time: 11:21:12, 11-Oct-2019
 
 
 import json
 import asyncio
 from bot.utils import msgutils, strutils, datautils, userutils, miscutils
-from bot.handlers import add_message_handler, add_private_message_handler, bot_prefix
+from bot.handlers import message_handler, bot_prefix
 from discord import Embed, NotFound, HTTPException
 import re
 import traceback
@@ -114,12 +114,12 @@ async def mod(bot, msg, reg):
             else:
                 datautils.nested_remove(msg.mentions[0], 'global', 'moderators')
 
-add_message_handler(settings, r'settings (?P<sub>enable|disable) (?P<command>.+?) (?P<channels>all|(?:channel_mention )+)')
-add_message_handler(purge, r'(?:purge|clear) (?P<num>[0-9]+) user_mention?')
+message_handler.add_public(settings, r'settings (?P<sub>enable|disable) (?P<command>.+?) (?P<channels>all|(?:channel_mention )+)')
+message_handler.add_public(purge, r'(?:purge|clear) (?P<num>[0-9]+) user_mention?')
 
-add_private_message_handler(save, r'save')
-add_private_message_handler(execute, r'exec [.\n]+')
-add_private_message_handler(data, r'data')
-add_private_message_handler(delete, r'(?:rm|remove|del(?:ete)?) (?P<path>.*)')
-add_private_message_handler(find, r'find (?P<path>.*)')
-add_private_message_handler(mod, r'mod (?P<sub> add|del) user_mention')
+message_handler.add_private(save, r'save')
+message_handler.add_private(execute, r'exec [.\n]+')
+message_handler.add_private(data, r'data')
+message_handler.add_private(delete, r'(?:rm|remove|del(?:ete)?) (?P<path>.*)')
+message_handler.add_private(find, r'find (?P<path>.*)')
+message_handler.add_private(mod, r'mod (?P<sub> add|del) user_mention')
