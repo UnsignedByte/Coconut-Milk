@@ -12,12 +12,12 @@ python3.6 -V >> "$logs"/log.txt
 echo "" >> "$logs"/log.txt
 
 cd ..
-python3.6 -u client.py >> "$logs"/log.txt 2>&1 &
+python3.6 -u main.py >> "$logs"/log.txt 2>&1 &
 pid=$!
 cd server
 
 control_c() {
-    pkill -f client.py
+    pkill -f main.py
     exit
 }
 
@@ -34,10 +34,10 @@ do
     python3.6 -V >> "$logs"/log.txt
     echo "" >> "$logs"/log.txt
 
-    pkill -f client.py >> "$logs"/log.txt
+    pkill -f main.py >> "$logs"/log.txt
 
     cd ..
-    python3.6 -u client.py >> "$logs"/log.txt 2>&1 &
+    python3.6 -u main.py >> "$logs"/log.txt 2>&1 &
     pid=$!
     cd server
   fi
@@ -61,11 +61,11 @@ do
        python3.6 -V >> "$logs"/log.txt
        echo "" >> "$logs"/log.txt
 
-       pkill -f client.py >> "$logs"/log.txt
+       pkill -f main.py >> "$logs"/log.txt
 
        cd ..
        mv "$dat"/Backup/user_data.txt "$dat"/user_data.txt
-       python3.6 -u client.py >> "$logs"/log.txt 2>&1 &
+       python3.6 -u main.py >> "$logs"/log.txt 2>&1 &
        pid=$!
        cd server
 
