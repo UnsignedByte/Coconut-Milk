@@ -2,7 +2,7 @@
 # @Date:   15:30:46, 04-Nov-2018
 # @Filename: fileutils.py
 # @Last modified by:   edl
-# @Last modified time: 18:58:59, 10-Oct-2019
+# @Last modified time: 00:01:08, 11-Oct-2019
 
 import os
 import pickle
@@ -43,11 +43,13 @@ def nested_pop(*keys):
 def alt_pop(key, *keys):
     nested_get(*keys).pop(key)
 
-
-def nested_get(*keys, default=None):
+def nested_get(*keys, default={}}):
+    print(keys)
     dic = get_data()
     for key in keys:
+        print(type(key))
         dic=dic.setdefault( key, {} )
+        print(dic)
     if not dic:
         dic=default
     return dic

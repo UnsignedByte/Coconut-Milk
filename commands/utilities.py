@@ -2,13 +2,13 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 21:34:36, 10-Oct-2019
+# @Last modified time: 23:54:49, 10-Oct-2019
 
 # from pprint import pformat
 import json
 import asyncio
 import pickle
-from bot.utils import msgutils, strutils, datautils, userutils, objutils
+from bot.utils import msgutils, strutils, datautils, userutils, objutils, miscutils
 from bot.handlers import add_message_handler, add_private_message_handler, bot_prefix
 from discord import Embed, NotFound, HTTPException
 import requests as req
@@ -162,24 +162,27 @@ async def save(bot, msg, reg):
         datautils.save_data();
         await msg.channel.send('Data saved!', delete_after=0.5);
 
-async def getData(bot, msg, reg):
+async def data(bot, msg, reg):
     if (await userutils.is_mod(bot, msg.author)):
-        await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.get_data(), indent=1), prefix='```json\n',suffix='```')
+        await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.get_data(), indent=2), prefix='```json\n',suffix='```')
 
 async def find(bot, msg, reg):
     if (await userutils.is_mod(bot, msg.author)):
-        if reg.group('key'):
+        path = reg.group('path');
+        if not path:
             await msg.channel.send('`' + str(list(datautils.get_data().keys())) + '`')
             return
-        await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.get_data()[reg.group('key')], indent=1), prefix='```json\n',suffix='```')
+        await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.nested_get(*miscutils.list2int(path.split())), indent=2), prefix='```json\n',suffix='```')
 
-async def delete_data(bot, msg, reg):
+async def delete(bot, msg, reg):
     if (await userutils.is_mod(bot, msg.author)):
-        keys = reg.group('path').split()
+        keys = miscutils.list2int(reg.group('path').split())
+        print(keys)
         if isinstance(datautils.nested_get(*keys[:-1]), dict):
             datautils.nested_pop(*keys)
         elif isinstance(datautils.nested_get(*keys[:-1]), list):
             datautils.nested_remove(keys[-1], *keys[:-1])
+        await msg.channel.send('deleted `{}`.'.format(reg.group('path')))
 
 async def mod(bot, msg, reg):
     if msg.author == (await userutils.get_owner(bot)):
@@ -196,7 +199,7 @@ add_message_handler(dictionary, r'define|dictionary')
 add_private_message_handler(info, r'(?:hi|info)')
 add_private_message_handler(save, r'save')
 add_private_message_handler(execute, r'exec [.\n]+')
-add_private_message_handler(getData, r'getdata')
-add_private_message_handler(delete_data, r'(?:remove|delete) (?P<path>.*)')
-add_private_message_handler(find, r'find (?P<key>.*)')
+add_private_message_handler(data, r'data')
+add_private_message_handler(delete, r'(?:rm|remove|del(?:ete)?) (?P<path>.*)')
+add_private_message_handler(find, r'find (?P<path>.*)')
 add_private_message_handler(mod, r'mod (?P<sub> add|del) user_mention')

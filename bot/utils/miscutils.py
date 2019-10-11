@@ -2,7 +2,7 @@
 # @Date:   15:30:36, 12-Aug-2018
 # @Filename: utils.py
 # @Last modified by:   edl
-# @Last modified time: 18:00:26, 05-Nov-2018
+# @Last modified time: 23:32:25, 10-Oct-2019
 
 
 import itertools
@@ -15,3 +15,14 @@ def group(lst, n):
 def chunkify(l, n):
     for i in range(0, len(l), n):
         yield l[i:i+n]
+
+def isint(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+def list2int(l):
+    #convert all intable strings in list to int
+    return list(map(lambda x:int(x) if isint(x) else x, l))
