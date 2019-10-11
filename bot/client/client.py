@@ -3,7 +3,7 @@ import asyncio
 import logging
 import re
 
-import from bot.client.getkey import readKey
+from bot.client.getkey import readKey
 import bot.handlers
 
 logger = logging.getLogger('discord')
