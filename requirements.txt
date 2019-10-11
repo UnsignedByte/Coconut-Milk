@@ -1,0 +1,8 @@
+discord
+dateparser
+beautifulsoup4
+pytz
+requests
+greenlet
+wolframalpha
+PyDictionary
