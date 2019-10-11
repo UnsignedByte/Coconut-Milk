@@ -2,27 +2,35 @@
 # @Date:   15:30:46, 04-Nov-2018
 # @Filename: fileutils.py
 # @Last modified by:   edl
-# @Last modified time: 15:33:05, 08-Oct-2019
+# @Last modified time: 18:58:59, 10-Oct-2019
 
 import os
 import pickle
 from shutil import copyfile
-from bot.handlers import bot_data
+import bot.handlers
+import os
 
-def load_data_file(file):
-    res = {}
-    if os.path.isfile('Data/'+file):
-        with open('Data/'+file, 'rb') as f:
-            res = pickle.load(f)
+def load_data():
+    if not os.path.exists("data/backup/"):
+        os.makedirs("data/backup/")
+    dat = {}
+    if os.path.isfile('data/data.txt'):
+        with open('data/data.txt', 'rb') as f:
+            dat = pickle.load(f)
     else:
-        with open('Data/'+file, 'wb') as f:
-            pickle.dump(res, f)
-    copyfile('Data/'+file, 'Data/Backup/'+file)
-    print('\t\t%s Loaded' % file)
-    return res
+        with open('data/data.txt', 'wb') as f:
+            pickle.dump(dat, f)
+    copyfile('data/data.txt', 'data/data_backup.txt')
+    return dat
+
+def save_data():
+    if os.path.isfile('data/data.txt'):
+        copyfile('data/data.txt', 'data/data_backup.txt')
+    with open('data/data.txt', 'wb') as f:
+        pickle.dump(get_data(), f)
 
 def nested_set(value, *keys):
-    dic = bot_data
+    dic = get_data()
     for key in keys[:-1]:
         dic = dic.setdefault(key, {})
     dic[keys[-1]] = value
@@ -37,7 +45,7 @@ def alt_pop(key, *keys):
 
 
 def nested_get(*keys, default=None):
-    dic = bot_data
+    dic = get_data()
     for key in keys:
         dic=dic.setdefault( key, {} )
     if not dic:
@@ -82,4 +90,7 @@ def nested_remove(value, *keys, **kwargs):
         return
 
 def get_data():
-    return bot_data
+    return bot.handlers.get_data()
+
+def set_data(data):
+    bot.handlers.set_data(data)

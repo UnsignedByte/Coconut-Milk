@@ -2,7 +2,7 @@
 # @Date:   10:01:53, 03-Nov-2018
 # @Filename: msgutils.py
 # @Last modified by:   edl
-# @Last modified time: 16:19:38, 09-Oct-2019
+# @Last modified time: 17:29:44, 10-Oct-2019
 
 import asyncio
 from discord import VoiceRegion, Forbidden
@@ -27,8 +27,7 @@ async def edit_embed(bot, msg, embed, usr=None):
         usr = bot.user
     txt = "Edited by {}.".format(userutils.nickname(usr, msg.guild))
     embed.set_footer(text=txt, icon_url=(usr.avatar_url if usr.avatar_url else usr.default_avatar_url))
-    m = await msg.edit(embed=embed)
-    return m
+    await msg.edit(embed=embed)
 
 async def send_large_message(bot, channel, content, prefix='', suffix=''):
     clist = strutils.split_str_chunks(content, 2000, prefix=prefix, suffix=suffix)

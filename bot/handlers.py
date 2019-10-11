@@ -2,7 +2,7 @@
 # @Date:   06:50:24, 02-May-2018
 # @Filename: handlers.py
 # @Last modified by:   edl
-# @Last modified time: 23:04:37, 09-Oct-2019
+# @Last modified time: 19:01:01, 10-Oct-2019
 
 bot_data = {}
 bot_prefix = '.'
@@ -10,22 +10,22 @@ message_handlers = {}
 private_message_handlers = {}
 
 import re
-import os
-import pickle
 from random import randint
-from shutil import copyfile
 from bot.utils import datautils, msgutils, strutils
 import discord
 
 print("Begin Handler Initialization")
 
 print("\tBegin Loading Files")
-closing = False
 
-if not os.path.exists("data/backup/"):
-    os.makedirs("data/backup/")
+bot_data = datautils.load_data();
+print(bot_data)
 
-bot_data = datautils.load_data_file('data.txt');
+def get_data():
+    return bot_data
+
+def set_data(dat):
+    bot_data = dat
 
 print("\tLoaded files")
 
@@ -73,8 +73,4 @@ async def on_message(bot, msg):
 async def timed_save(Bot):
     while True:
         await asyncio.sleep(60)
-        # await message_handlers["save"](Bot, None, overrideperms=True)
-        try:
-            copyfile('data/data.txt', 'data/backup/data.txt')
-        except Exception as e:
-            traceback.print_tb(e.__traceback__)
+        datautils.save_data()

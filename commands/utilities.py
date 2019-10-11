@@ -2,13 +2,14 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 22:55:21, 09-Oct-2019
+# @Last modified time: 18:45:07, 10-Oct-2019
 
-from pprint import pformat
+# from pprint import pformat
+import json
 import asyncio
 import pickle
-from utils import msgutils, strutils, datautils, userutils, objutils
-from discow.handlers import add_message_handler, add_private_message_handler, flip_shutdown, add_regex_message_handler, bot_data
+from bot.utils import msgutils, strutils, datautils, userutils, objutils
+from bot.handlers import add_message_handler, add_private_message_handler
 from discord import Embed, NotFound, HTTPException
 import requests as req
 import re
@@ -23,7 +24,7 @@ async def info(bot, msg, reg):
     await msgutils.send_embed(bot, msg, em)
 
 async def execute(bot, msg, reg):
-    if msg.author == userutils.get_owner():
+    if is_mod(bot, msg.author):
         #From https://stackoverflow.com/a/46087477/5844752
         class GreenAwait:
             def __init__(self, child):
@@ -164,18 +165,18 @@ async def dictionary(bot, msg):
 
 async def purge(bot, msg):
     perms = msg.channel.permissions_for(msg.author)
-    if perms.manage_messages or msg.author.id == "418827664304898048":
+    if perms.manage_messages or is_mod(bot, msg.author):
         num = int(strutils.parse_command(msg.content, 1)[1].split(' ')[0])+1
         if num < 2:
-            await bot.send_message("There is no reason to delete 0 messages!")
+            await msg.channel.send("There is no reason to delete 0 messages!")
         deletechunks = []
         def check(message):
             return not msg.mentions or msg.mentions[0].id == message.author.id
         try:
             await bot.purge_from(msg.channel, limit=num, check=check)
-            m = await bot.send_message(msg.channel, strutils.format_response("**{_mention}** has cleared the last **{_number}** messages!", _msg=msg, _number=num-1))
+            m = await msg.channel.send(strutils.format_response("**{_mention}** has cleared the last **{_number}** messages!", _msg=msg, _number=num-1))
         except HTTPException:
-            m = await bot.send_message(msg.channel, strutils.format_response("You cannot bulk delete messages that are over 14 days old!!"))
+            m = await msg.channel.send(strutils.format_response("You cannot bulk delete messages that are over 14 days old!!"))
 
         await asyncio.sleep(2)
         await bot.delete_message(m)
@@ -183,39 +184,22 @@ async def purge(bot, msg):
         em = Embed(title="Insufficient Permissions", description=strutils.format_response("{_mention} does not have sufficient permissions to perform this task.", _msg=msg), colour=0xd32323)
         await msgutils.send_embed(bot, msg, em)
 
-async def save(bot, msg, overrideperms = False):
-    if overrideperms or userutils.is_mod(msg.author):
-        if not overrideperms:
-            em = Embed(title="Saving Data...", description="Saving...", colour=0xd32323)
-            msg = await msgutils.send_embed(bot, msg, em)
-            await asyncio.sleep(1)
-        data = datautils.get_data()
-        for k, v in data.items():
-            with open('Data/%s.txt' % k, 'wb') as f:
-                pickle.dump(v, f)
-        if not overrideperms:
-            em.description = "Complete!"
-            msg = await msgutils.edit_embed(bot, msg, embed=em)
-            await asyncio.sleep(0.5)
-            await bot.delete_message(msg)
-        return True
-    else:
-        em = Embed(title="Insufficient Permissions", description=strutils.format_response("{_mention} does not have sufficient permissions to perform this task.", _msg=msg), colour=0xd32323)
-        await msgutils.send_embed(bot, msg, em)
-        return False
+async def save(bot, msg, reg):
+    if await userutils.is_mod(bot, msg.author):
+        await msg.channel.trigger_typing();
+        datautils.save_data();
+        await msg.channel.send('Data saved!', delete_after=0.5);
 
 async def getData(bot, msg, reg):
     if (await userutils.is_mod(bot, msg.author)):
-        msgutils.send_large_message(bot, msg.channel, pformat(datautils.get_data()), prefix='```xml\n',suffix='```')
+        await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.get_data(), indent=1), prefix='```json\n',suffix='```')
 
 async def find(bot, msg, reg):
     if (await userutils.is_mod(bot, msg.author)):
-        if reg.group('key') == '*':
-            await bot.send_message(msg.channel, '`' + str(list(bot_data.keys())) + '`')
+        if reg.group('key'):
+            await msg.channel.send('`' + str(list(datautils.get_data().keys())) + '`')
             return
-        await msgutils.send_large_message(bot, msg.channel, pformat(bot_data[reg.group('key')]), prefix='```xml\n',suffix='```')
-    else:
-        await bot.send_message(msg.channel, 'You are not mod!')
+        await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.get_data()[reg.group('key')], indent=1), prefix='```json\n',suffix='```')
 
 async def delete_data(bot, msg, reg):
     if (await userutils.is_mod(bot, msg.author)):
@@ -225,30 +209,24 @@ async def delete_data(bot, msg, reg):
         elif isinstance(datautils.nested_get(*keys[:-1]), list):
             datautils.nested_remove(keys[-1], *keys[:-1])
 
-async def makeMod(bot, msg, reg):
+async def mod(bot, msg, reg):
     if msg.author == (await userutils.get_owner(bot)):
-        if msg.mentions[0] not in datautils.nested_get('global_data', 'moderators', default=[]):
-            datautils.nested_append(msg.mentions[0], 'global_data', 'moderators')
-    else:
-        await bot.send_message(msg.channel, 'You are not owner!')
-async def removeMod(bot, msg, reg):
-    if msg.author == (await userutils.get_owner(bot)):
-        datautils.nested_remove(msg.mentions[0], 'global_data', 'moderators')
-    else:
-        await bot.send_message(msg.channel, 'You are not owner!')
+        if msg.mentions[0] not in datautils.nested_get('moderators', default=[]):
+            if reg.group('sub') == 'add':
+                datautils.nested_append(msg.mentions[0], 'global', 'moderators')
+            else:
+                datautils.nested_remove(msg.mentions[0], 'global', 'moderators')
 
 add_message_handler(info, r'(?:hi|info)')
-add_message_handler(save, "save")
 add_message_handler(purge, "purge")
 add_message_handler(purge, "clear")
 add_message_handler(quote, "quote")
 add_message_handler(dictionary, "define")
 add_message_handler(dictionary, "dictionary")
-add_message_handler(execute, r'(exec [.\n]+))
-add_private_message_handler(execute, r'(exec [.\n]+))
 
-add_regex_message_handler(getData, r'getdata')
-add_regex_message_handler(delete_data, r'(?:remove|delete) (?P<path>.*)')
-add_regex_message_handler(find, r'sub (?P<key>.*)')
-add_regex_message_handler(makeMod, r'make (?P<user><@!?(?P<userid>[0-9]+)>) mod')
-add_regex_message_handler(removeMod, r'del (?P<user><@!?(?P<userid>[0-9]+)>) mod')
+add_private_message_handler(save, r'save')
+add_private_message_handler(execute, r'exec [.\n]+')
+add_private_message_handler(getData, r'getdata')
+add_private_message_handler(delete_data, r'(?:remove|delete) (?P<path>.*)')
+add_private_message_handler(find, r'find (?P<key>.*)')
+add_private_message_handler(mod, r'mod (?P<sub> add|del) user_mention')

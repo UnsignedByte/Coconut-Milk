@@ -2,7 +2,7 @@
 # @Date:   10:01:28, 03-Nov-2018
 # @Filename: strutils.py
 # @Last modified by:   edl
-# @Last modified time: 22:55:44, 09-Oct-2019
+# @Last modified time: 11:07:19, 10-Oct-2019
 
 from bot.handlers import bot_prefix
 import re
@@ -29,7 +29,7 @@ def format_regex(keyword):
     for i in formatreg:
         keyword = keyword.replace(i, formatreg[i])
 
-    keyword = keyword.replace(' ', '\s+') # allow all whitespace
+    keyword = keyword.replace(' ', '\s*') # allow all whitespace
     keyword = re.escape(bot_prefix)+keyword+r'\Z' #Make sure command ends at end of match
     return keyword
 
