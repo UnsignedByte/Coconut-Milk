@@ -2,20 +2,17 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 00:48:44, 11-Oct-2019
+# @Last modified time: 11:12:16, 11-Oct-2019
 
 # from pprint import pformat
-import json
 import asyncio
-import pickle
-from bot.utils import msgutils, strutils, datautils, userutils, objutils, miscutils
+from bot.utils import msgutils, userutils
 from bot.handlers import add_message_handler, add_private_message_handler, bot_prefix
 from discord import Embed, NotFound, HTTPException
-import requests as req
 import re
-import traceback
-from bs4 import BeautifulSoup
-import greenlet
+from PyDictionary import PyDictionary
+
+dictionary = PyDictionary()
 
 async def info(bot, msg, reg):
     em = Embed(title="Who am I?", colour=0x9542f4)
@@ -23,174 +20,16 @@ async def info(bot, msg, reg):
     em.add_field(name="Features", value="For information about my features do `"+bot_prefix+"help` or take a look at [my github](https://github.com/UnsignedByte/Persimmon/)!")
     await msgutils.send_embed(bot, msg, em)
 
-async def execute(bot, msg, reg):
-    if is_mod(bot, msg.author):
-        #From https://stackoverflow.com/a/46087477/5844752
-        class GreenAwait:
-            def __init__(self, child):
-                self.current = greenlet.getcurrent()
-                self.value = None
-                self.child = child
-
-            def __call__(self, future):
-                self.value = future
-                self.current.switch()
-
-            def __iter__(self):
-                while self.value is not None:
-                    yield self.value
-                    self.value = None
-                    self.child.switch()
-
-        def gexec(code):
-            child = greenlet.greenlet(exec)
-            gawait = GreenAwait(child)
-            child.switch(code, {'gawait': gawait, 'bot': bot, 'msg': msg})
-            yield from gawait
-
-        async def aexec(code):
-            green = greenlet.greenlet(gexec)
-            gen = green.switch(code)
-            for future in gen:
-                await future
-
-        try:
-            out = await aexec('import asyncio\nasync def run_exec():\n\t'+'\t'.join(re.search(r'`(?P<in>``)?(?P<body>(.?\s?)*)(?(in)```|`)', msg.content).group("body").strip().splitlines(True))+'\ngawait(run_exec())')
-        except Exception:
-            await msgutils.send_embed(bot, msg, Embed(title="Output", description=traceback.format_exc(), colour=0xd32323))
-
-async def dictionary(bot, msg):
-    link="https://www.merriam-webster.com/dictionary/"
-    x = strutils.strutils.strip_command(msg.content).replace(' ', '%20')
-    em = Embed(title="Definition for "+x+".", description="Retrieving Definition...", colour=0x4e91fc)
-    dictm = await msgutils.send_embed(bot, msg, em)
-
-    try:
-        response = req.get(link+x)
-        response.raise_for_status()
-        html_doc = response.text
-        soup = BeautifulSoup(html_doc, 'html.parser')
-    except req.exceptions.HTTPError as err:
-        e = err.response.text
-        try:
-            em.description = "Could not find "+x+" in the dictionary. Choose one of the words below, or type 'cancel' to cancel."
-            soup = BeautifulSoup(e.read(), 'html.parser')
-            words = soup.find("ol", {"class":"definition-list"}).get_text().split()
-            for i in range(0, len(words)):
-                em.description+='\n**'+str(i+1)+":** *"+words[i]+'*'
-            dictm = await msgutils.send_embed(bot, dictm, em)
-            while True:
-                vm = await bot.wait_for_message(timeout=600, author=msg.author, channel=msg.channel)
-                if not vm:
-                    return
-                v = vm.content
-                if v == 'cancel':
-                    em.description = "*Operation Cancelled*"
-                    await bot.delete_message(vm)
-                    dictm = await msgutils.send_embed(bot, dictm, em)
-                    return
-                elif objutils.integer(v):
-                    if int(v)>=1 and int(v) <=len(words):
-                        x = words[int(v)-1].replace(' ', "%20")
-                        await bot.delete_message(vm)
-                        break
-                else:
-                    if v in words:
-                        x = v.replace(' ', "%20")
-                        await bot.delete_message(vm)
-                        break
-            html_doc = req.get(link+x).text
-            soup = BeautifulSoup(html_doc, 'html.parser')
-            em.title = "Definition for "+x+"."
-            em.description = "Retrieving Definition..."
-            dictm = await msgutils.send_embed(bot, dictm, em)
-        except AttributeError:
-            em.description = "Could not find "+x+" in the dictionary."
-            dictm = await msgutils.send_embed(bot, dictm, em)
-            return
-
-    em.description = ""
-    txts = soup.find("div", {"id" : "entry-1"}).find("div", {"class":"vg"}).findAll("div", {"class":["sb", "has-sn"]}, recursive=False)
-    for x in txts:
-        l = list(filter(None,map(lambda x:x.strip(), x.get_text().split("\n"))))
-        st = ""
-        for a in l:
-            if a.startswith(":"):
-                st+=' '.join(a.strip().split())
-            else:
-                v1 = a.split()
-                if objutils.integer(v1[0]):
-                    st+="\n**__"+v1[0]+"__**"
-                    v1 = v1[1:]
-                for n in v1:
-                    if objutils.integer(n.strip("()")):
-                        st+="\n\t\t***"+n+"***"
-                    elif len(n)==1:
-                        st+="\n\t**"+n+"**"
-                    else:
-                        st+=" *"+n+"*"
-
-        em.description+= '\n'+st
-    em.description+="\n\nDefinitions retrieved from [The Merriam-Webster Dictionary](https://www.merriam-webster.com/) using [Dictionary](https://github.com/UnsignedByte/Dictionary) by [UnsignedByte](https://github.com/UnsignedByte)."
-    dictm = await msgutils.send_embed(bot, dictm, em)
-
-
-async def purge(bot, msg, reg):
-    perms = msg.channel.permissions_for(msg.author)
-    if perms.manage_messages or is_mod(bot, msg.author):
-        await msg.delete()
-        num = int(reg.group('num'));
-        def check(message):
-            return not msg.mentions or msg.mentions[0].id == message.author.id
-        await msg.channel.purge(limit=num, check=check)
-        await msg.channel.send("**{}** has cleared the last **{}** messages!".format(msg.author.mention,num-1), delete_after=2)
-    else:
-        em = Embed(title="Insufficient Permissions", description=strutils.format_response("{_mention} does not have sufficient permissions to perform this task.", _msg=msg), colour=0xd32323)
-        await msgutils.send_embed(bot, msg, em, delete_after=2)
-
-async def save(bot, msg, reg):
-    if await userutils.is_mod(bot, msg.author):
-        await msg.channel.trigger_typing();
-        datautils.save_data();
-        await msg.channel.send('Data saved!', delete_after=0.5);
-
-async def data(bot, msg, reg):
-    if (await userutils.is_mod(bot, msg.author)):
-        await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.get_data(), indent=2), prefix='```json\n',suffix='```')
-
-async def find(bot, msg, reg):
-    if (await userutils.is_mod(bot, msg.author)):
-        path = reg.group('path');
-        if not path:
-            await msg.channel.send('`' + str(list(datautils.get_data().keys())) + '`')
-            return
-        await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.nested_get(*miscutils.list2int(path.split())), indent=2), prefix='```json\n',suffix='```')
-
-async def delete(bot, msg, reg):
-    if (await userutils.is_mod(bot, msg.author)):
-        keys = miscutils.list2int(reg.group('path').split())
-        if isinstance(datautils.nested_get(*keys[:-1]), dict):
-            datautils.nested_pop(*keys)
-        elif isinstance(datautils.nested_get(*keys[:-1]), list):
-            datautils.nested_remove(keys[-1], *keys[:-1])
-        await msg.channel.send('deleted `{}`.'.format(reg.group('path')))
-
-async def mod(bot, msg, reg):
-    if msg.author == (await userutils.get_owner(bot)):
-        if msg.mentions[0] not in datautils.nested_get('moderators', default=[]):
-            if reg.group('sub') == 'add':
-                datautils.nested_append(msg.mentions[0], 'global', 'moderators')
-            else:
-                datautils.nested_remove(msg.mentions[0], 'global', 'moderators')
+async def define(bot, msg, reg):
+    x = reg.group('word')
+    meaning = dictionary.meaning(x);
+    em = Embed(title=x)
+    for type in meaning:
+        desc = ''.join('{}. {}\n'.format(i, meaning[type][i]) for i in range(len(meaning[type])));
+        em.add_field(name=type, value=desc)
+    await msgutils.send_embed(bot, msg, em)
 
 add_message_handler(info, r'hi|info')
-add_message_handler(purge, r'(?:purge|clear) (?P<num>[0-9]+) user_mention?')
-add_message_handler(dictionary, r'define|dictionary')
+add_message_handler(define, r'(?:define|dictionary) (?P<word>.+)')
 
 add_private_message_handler(info, r'(?:hi|info)')
-add_private_message_handler(save, r'save')
-add_private_message_handler(execute, r'exec [.\n]+')
-add_private_message_handler(data, r'data')
-add_private_message_handler(delete, r'(?:rm|remove|del(?:ete)?) (?P<path>.*)')
-add_private_message_handler(find, r'find (?P<path>.*)')
-add_private_message_handler(mod, r'mod (?P<sub> add|del) user_mention')

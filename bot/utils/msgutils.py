@@ -2,7 +2,7 @@
 # @Date:   10:01:53, 03-Nov-2018
 # @Filename: msgutils.py
 # @Last modified by:   edl
-# @Last modified time: 00:40:49, 11-Oct-2019
+# @Last modified time: 10:50:43, 11-Oct-2019
 
 import asyncio
 from discord import VoiceRegion, Forbidden
@@ -19,7 +19,7 @@ async def send_embed(bot, msg, embed, usr=None, delete_after=None):
         m = await msg.channel.send(embed=embed)
         return m
     except Forbidden:
-        await msg.channel.send("**Missing Permissions**\nDiscow is missing permissions to send embeds.")
+        await msg.channel.send("**Missing Permissions**\nPersimmon is missing permissions to send embeds.")
         return None
 
 async def edit_embed(bot, msg, embed, usr=None, delete_after=None):
