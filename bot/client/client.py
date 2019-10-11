@@ -3,7 +3,7 @@ import asyncio
 import logging
 import re
 
-import bot.client.getkey as _getkey
+import from bot.client.getkey import readKey
 import bot.handlers
 
 logger = logging.getLogger('discord')
@@ -22,8 +22,7 @@ class BotClientClass(discord.Client):
         await bot.handlers.on_message(self, after)
 Bot = BotClientClass()
 
-def runBot():
-    Bot.run(_getkey.key())
+keys = readKey()
 
-if __name__ == "__main__":
-    print("Auth key is %s" % _getkey.key())
+def runBot():
+    Bot.run(keys[0])
