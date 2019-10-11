@@ -1,1 +1,1 @@
-worker: python main.py > "$home"/logs/log.txt
+worker: python main.py > ~/logs/log.txt
