@@ -2,7 +2,7 @@
 # @Date:   15:55:15, 12-Aug-2018
 # @Filename: wolframalpha.py
 # @Last modified by:   edl
-# @Last modified time: 23:47:03, 11-Oct-2019
+# @Last modified time: 23:51:02, 11-Oct-2019
 
 import asyncio
 import os
@@ -80,7 +80,7 @@ async def wolfram(bot, msg, reg):
     max_width = max(widths)+item_padding
     total_height = sum(heights)+item_padding*2
 
-    partitioned_heights = miscutils.partition_list(heights, total_height//max_width)
+    partitioned_heights = miscutils.partition_list(heights, int((total_height*max_width)**0.5//max_width+1))
     partitions = [len(i) for i in partitioned_heights]
     sum_partitions = [sum(partitions[0:i]) for i in range(len(partitions)+1)]
     partitioned_widths = [max(widths[sum_partitions[i]:sum_partitions[i+1]]) for i in range(len(sum_partitions)-1)]
