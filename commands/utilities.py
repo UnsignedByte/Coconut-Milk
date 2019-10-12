@@ -2,7 +2,7 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 17:08:12, 11-Oct-2019
+# @Last modified time: 17:10:31, 11-Oct-2019
 
 # from pprint import pformat
 import asyncio
@@ -26,7 +26,7 @@ async def define(bot, msg, reg):
     if not meaning:
         await msg.channel.send('Could not find `{}` in the dictionary. Make sure the word is spelled correctly.'.format(x))
         return
-    em = Embed(title=x, colour=miscutils.colours['purple'])
+    em = Embed(title=x.title(), colour=miscutils.colours['purple'])
     for type in meaning:
         desc = ''.join('{}. {}\n'.format(i, meaning[type][i]) for i in range(len(meaning[type])));
         em.add_field(name=type, value=desc)
