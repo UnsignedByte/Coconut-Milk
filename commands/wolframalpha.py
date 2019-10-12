@@ -2,7 +2,7 @@
 # @Date:   15:55:15, 12-Aug-2018
 # @Filename: wolframalpha.py
 # @Last modified by:   edl
-# @Last modified time: 23:51:02, 11-Oct-2019
+# @Last modified time: 23:55:27, 11-Oct-2019
 
 import asyncio
 import os
@@ -30,7 +30,7 @@ async def wolfram(bot, msg, reg):
 
     res = wa_client.query(query)
 
-    if not res.success: # if query fails
+    if res.success.lower() == 'false': # if query fails
         em = Embed(title=query, description="No results", colour=miscutils.colours['orange'])
         await msgutils.edit_embed(bot, oldem, em)
         return
