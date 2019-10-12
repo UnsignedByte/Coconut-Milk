@@ -2,7 +2,7 @@
 # @Date:   15:55:15, 12-Aug-2018
 # @Filename: wolframalpha.py
 # @Last modified by:   edl
-# @Last modified time: 20:02:27, 11-Oct-2019
+# @Last modified time: 23:38:30, 11-Oct-2019
 
 import asyncio
 import os
@@ -59,7 +59,7 @@ async def wolfram(bot, msg, reg):
         pod_img = Image.new('RGBA', (max_width, total_height), (0,0,0,0))
         draw = ImageDraw.Draw(pod_img)
         max_width = max(max_width+item_padding, draw.textsize('\n'.join(t), font=font)[0]+item_padding)
-        pod_img = Image.new('RGBA', (max_width, total_height), (0,0,0,0))
+        pod_img = Image.new('RGBA', (max_width, total_height), (255,255,255,0))
         draw = ImageDraw.Draw(pod_img)
 
         y_offset = 0
@@ -71,27 +71,49 @@ async def wolfram(bot, msg, reg):
         for im in subimgs:
             pod_img.paste(im, (item_padding,y_offset))
             y_offset += im.size[1]+item_padding
-            if podn < len(res['pod'])-1:
-                draw.line((0,y_offset-item_padding/2,max_width,y_offset-item_padding/2),fill=(233,233,233),width=1)
         images.append(pod_img);
 
     # chained_imgs = list(itertools.chain.from_iterable(images))
     #
     widths, heights = zip(*(i.size for i in images))
     #
-    max_width = max(widths)
+    max_width = max(widths)+item_padding
     total_height = sum(heights)+item_padding*2
+
+    partitioned_heights = miscutils.partition_list(heights, total_height//max_width)
+    partitions = [len(i) for i in partitioned_heights]
+    sum_partitions = [sum(partitions[0:i]) for i in range(len(partitions)+1)]
+    partitioned_widths = [max(widths[sum_partitions[i]:sum_partitions[i+1]]) for i in range(len(sum_partitions)-1)]
+
+    max_height = max(sum(i) for i in partitioned_heights)+item_padding*2
+    total_width = sum(partitioned_widths)+item_padding*2
 
     # miscutils.partition_list(heights, )
 
-    new_im = imgutils.round_rectangle((max_width, total_height), item_padding, "white")
+    new_im = imgutils.round_rectangle((total_width, max_height), item_padding, "white")
     draw = ImageDraw.Draw(new_im)
 
-
-    y_offset = item_padding
-    for im in images:
-        new_im.paste(im, (0,y_offset), im)
-        y_offset+=im.size[1]
+    x_offset = 0
+    # for i in range(len(partitioned_widths))
+    for i in range(len(partitioned_widths)):
+        y_offset = item_padding
+        for j in range(sum_partitions[i], sum_partitions[i+1]):
+            im = images[j]
+            new_im.paste(im, (x_offset,y_offset), im)
+            y_offset+=im.size[1]
+            if j < sum_partitions[i+1]-1: #draw horizontal line
+                x1 = x_offset+item_padding/2
+                x2 = x_offset+partitioned_widths[i]+item_padding/2
+                y = y_offset-item_padding/2
+                if i == 0:
+                    x1 = 0
+                elif i == len(partitioned_widths)-1:
+                    x2 = total_width
+                draw.line((x1,y,x2,y),fill=(233,233,233),width=1)
+        if i < len(partitioned_widths)-1: #Draw vertical line
+            x = x_offset+partitioned_widths[i]+item_padding/2
+            draw.line((x,0,x,max_height),fill=(233,233,233),width=1)
+        x_offset += partitioned_widths[i]
     new_im.save("data/wa_save.png")
 
     res_img = imgur_client.upload_image("data/wa_save.png", title=query)
