@@ -2,7 +2,7 @@
 # @Date:   15:30:36, 12-Aug-2018
 # @Filename: utils.py
 # @Last modified by:   edl
-# @Last modified time: 23:32:25, 10-Oct-2019
+# @Last modified time: 15:42:01, 11-Oct-2019
 
 
 import itertools
@@ -26,3 +26,8 @@ def isint(s):
 def list2int(l):
     #convert all intable strings in list to int
     return list(map(lambda x:int(x) if isint(x) else x, l))
+
+colours = {
+    'red':0xd32323,
+    'purple':0x9542f4
+}

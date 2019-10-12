@@ -2,13 +2,14 @@
 # @Date:   19:01:44, 02-Apr-2018
 # @Filename: help.py
 # @Last modified by:   edl
-# @Last modified time: 11:20:43, 11-Oct-2019
+# @Last modified time: 15:42:24, 11-Oct-2019
 
 
 import asyncio
 from discord import Embed
 from bot.handlers import message_handler, bot_prefix
 from collections import OrderedDict
+from bot.utils import miscutils
 
 print("\tInitializing Help Command")
 print("\t\tParsing Help Command")
@@ -32,7 +33,7 @@ with open("README.md", "r") as f:
             else:
                 helpvals[lastheader].append('> '+l.replace('`', ''))
 
-helpembed = Embed(colour=0x9542f4)
+helpembed = Embed(colour=miscutils.colours['purple'])
 
 desc = "```markdown"
 

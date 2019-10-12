@@ -2,7 +2,7 @@
 # @Date:   11:04:49, 05-Apr-2018
 # @Filename: settings.py
 # @Last modified by:   edl
-# @Last modified time: 11:21:12, 11-Oct-2019
+# @Last modified time: 15:41:42, 11-Oct-2019
 
 
 import json
@@ -64,7 +64,7 @@ async def execute(bot, msg, reg):
         try:
             out = await aexec('import asyncio\nasync def run_exec():\n\t'+'\t'.join(re.search(r'`(?P<in>``)?(?P<body>(.?\s?)*)(?(in)```|`)', msg.content).group("body").strip().splitlines(True))+'\ngawait(run_exec())')
         except Exception:
-            await msgutils.send_embed(bot, msg, Embed(title="Output", description=traceback.format_exc(), colour=0xd32323))
+            await msgutils.send_embed(bot, msg, Embed(title="Output", description=traceback.format_exc(), colour=miscutils.colours['red']))
 
 async def purge(bot, msg, reg):
     perms = msg.channel.permissions_for(msg.author)
@@ -76,7 +76,7 @@ async def purge(bot, msg, reg):
         await msg.channel.purge(limit=num, check=check)
         await msg.channel.send("**{}** has cleared the last **{}** messages!".format(msg.author.mention,num-1), delete_after=2)
     else:
-        em = Embed(title="Insufficient Permissions", description=strutils.format_response("{_mention} does not have sufficient permissions to perform this task.", _msg=msg), colour=0xd32323)
+        em = Embed(title="Insufficient Permissions", description=strutils.format_response("{_mention} does not have sufficient permissions to perform this task.", _msg=msg), colour=miscutils.colour.red)
         await msgutils.send_embed(bot, msg, em, delete_after=2)
 
 async def save(bot, msg, reg):
