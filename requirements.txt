@@ -8,3 +8,4 @@ wolframalpha
 PyDictionary
 pyimgur
 wolframalpha
+PIL
