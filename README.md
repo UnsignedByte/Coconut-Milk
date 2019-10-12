@@ -22,7 +22,7 @@ Remember to delete `{}` and `()`.
 |settings|`.settings {args}`|Look at Settings Subcommands.|`settings`|
 |purge|`.purge {n}`|Clears the last `n` messages.|`clear`, `purge`|
 |define|`.define {word}`|Retrieves the definition of a word from Merriam-Webster.|`define`, `dictionary`|
-|wolframalpha|`.wolframalpha {query}`|Queries wolframalpha and returns an image containing the result|`wolframalpha`, `wolfram`, `wa`|
+|wolfram|`.wolfram {query}`|Queries wolframalpha and returns an image containing the result|`wolfram`, `wolframalpha`, `wa`|
 
 #### Settings Subcommands
 

@@ -22,7 +22,5 @@ class BotClientClass(discord.Client):
         await bot.handlers.on_message(self, after)
 Bot = BotClientClass()
 
-keys = readKey()
-
 def runBot():
-    Bot.run(keys[0])
+    Bot.run(readKey(0))

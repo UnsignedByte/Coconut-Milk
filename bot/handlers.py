@@ -2,7 +2,7 @@
 # @Date:   06:50:24, 02-May-2018
 # @Filename: handlers.py
 # @Last modified by:   edl
-# @Last modified time: 15:14:31, 11-Oct-2019
+# @Last modified time: 18:00:06, 11-Oct-2019
 
 bot_data = {}
 bot_prefix = '.'

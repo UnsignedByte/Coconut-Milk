@@ -6,3 +6,5 @@ requests
 greenlet
 wolframalpha
 PyDictionary
+pyimgur
+wolframalpha
