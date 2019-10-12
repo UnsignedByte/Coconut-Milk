@@ -2,7 +2,7 @@
 # @Date:   15:55:15, 12-Aug-2018
 # @Filename: wolframalpha.py
 # @Last modified by:   edl
-# @Last modified time: 23:38:30, 11-Oct-2019
+# @Last modified time: 23:47:03, 11-Oct-2019
 
 import asyncio
 import os
@@ -25,13 +25,13 @@ imgur_client = pyimgur.Imgur(readKey(1))
 
 async def wolfram(bot, msg, reg):
     query = reg.group('query')
-    em = Embed(title=query, description="Requesting data", colour=0xe4671b)
+    em = Embed(title=query, description="Requesting data", colour=miscutils.colours['orange'])
     oldem = await msgutils.send_embed(bot, msg, em)
 
     res = wa_client.query(query)
 
     if not res.success: # if query fails
-        em = Embed(title=query, description="No results", colour=0xe4671b)
+        em = Embed(title=query, description="No results", colour=miscutils.colours['orange'])
         await msgutils.edit_embed(bot, oldem, em)
         return
 
@@ -118,7 +118,7 @@ async def wolfram(bot, msg, reg):
 
     res_img = imgur_client.upload_image("data/wa_save.png", title=query)
 
-    em = Embed(title=query, url=res_img.link, colour = 0xe4671b)
+    em = Embed(title=query, url=res_img.link, colour = miscutils.colours['orange'])
     em.set_image(url=res_img.link)
     await msgutils.edit_embed(bot, oldem, em)
 

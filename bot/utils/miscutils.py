@@ -2,7 +2,7 @@
 # @Date:   15:30:36, 12-Aug-2018
 # @Filename: utils.py
 # @Last modified by:   edl
-# @Last modified time: 20:15:05, 11-Oct-2019
+# @Last modified time: 23:46:53, 11-Oct-2019
 
 
 import itertools
@@ -11,7 +11,8 @@ from collections import OrderedDict
 
 colours = {
 'red':0xd32323,
-'purple':0x9542f4
+'purple':0x9542f4,
+'orange':0xe4671b
 }
 
 def group(lst, n):
