@@ -2,7 +2,7 @@
 # @Date:   11:04:49, 05-Apr-2018
 # @Filename: settings.py
 # @Last modified by:   edl
-# @Last modified time: 15:41:42, 11-Oct-2019
+# @Last modified time: 10:13:03, 13-Oct-2019
 
 
 import json
@@ -114,8 +114,20 @@ async def mod(bot, msg, reg):
             else:
                 datautils.nested_remove(msg.mentions[0], 'global', 'moderators')
 
+async def ban(bot, msg, reg):
+    perms = msg.channel.permissions_for(msg.author)
+    if perms.ban_members:
+        await msg.guild.ban(msg.mentions[0], reason=reg.group('reason'), delete_message_days=reg.group('days') if reg.group('days') else 0)
+async def unban(bot, msg, reg):
+    perms = msg.channel.permissions_for(msg.author)
+    if perms.ban_members:
+        await msg.guild.unban(msg.mentions[0], reason=reg.group('reason'))
+
+
 message_handler.add_public(settings, r'settings (?P<sub>enable|disable) (?P<command>.+?) (?P<channels>all|(?:channel_mention )+)')
 message_handler.add_public(purge, r'(?:purge|clear) (?P<num>[0-9]+) user_mention?')
+message_handler.add_public(ban, r'(?:ban) user_mention (?P<reason>.+?)? (?P<days>[0-7])?')
+message_handler.add_public(unban, r'(?:unban) user_mention (?P<reason>.+)?')
 
 message_handler.add_private(save, r'save')
 message_handler.add_private(execute, r'exec [.\n]+')

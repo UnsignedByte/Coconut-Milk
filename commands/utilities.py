@@ -2,7 +2,7 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 21:48:39, 12-Oct-2019
+# @Last modified time: 10:22:20, 13-Oct-2019
 
 # from pprint import pformat
 import asyncio
@@ -62,8 +62,8 @@ async def translate(bot, msg, reg):
     else:
         em.description = 'No language specified. Translating to english.'
         res = translator.translate(x)
-    em.add_field(name=miscutils.lang_codes[res.src], value=res.origin, inline=True)
-    em.add_field(name=miscutils.lang_codes[res.dest], value=res.text, inline=True)
+    em.add_field(name=miscutils.lang_codes[res.src.lower()], value=res.origin, inline=True)
+    em.add_field(name=miscutils.lang_codes[res.dest.lower()], value=res.text, inline=True)
     await msgutils.send_embed(bot, msg, em)
 
 message_handler.add(info, r'hi|info')
