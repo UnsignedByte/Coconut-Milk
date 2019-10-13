@@ -2,7 +2,7 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 21:44:31, 12-Oct-2019
+# @Last modified time: 21:48:39, 12-Oct-2019
 
 # from pprint import pformat
 import asyncio
@@ -28,7 +28,7 @@ async def urban(bot, msg, reg):
     try:
         res = urbandict.define(x)
         res = res[0]
-        em = Embed(title=res['word'], description=strutils.escape_markdown(res['def']), colour=miscutils.colours['orange'])
+        em = Embed(title=x.title(), description=strutils.escape_markdown(res['def']), colour=miscutils.colours['orange'])
         if res['example']:
             em.add_field(name='Example', value=res['example'])
         await msgutils.send_embed(bot, msg, em)
