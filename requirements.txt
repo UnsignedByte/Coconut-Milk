@@ -9,3 +9,4 @@ PyDictionary
 pyimgur
 wolframalpha
 pillow
+googletrans

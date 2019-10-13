@@ -2,7 +2,7 @@
 # @Date:   15:55:15, 12-Aug-2018
 # @Filename: wolframalpha.py
 # @Last modified by:   edl
-# @Last modified time: 23:55:27, 11-Oct-2019
+# @Last modified time: 14:31:51, 12-Oct-2019
 
 import asyncio
 import os
@@ -34,6 +34,9 @@ async def wolfram(bot, msg, reg):
         em = Embed(title=query, description="No results", colour=miscutils.colours['orange'])
         await msgutils.edit_embed(bot, oldem, em)
         return
+
+    em = Embed(title=query, description="Loading Images", colour=miscutils.colours['orange'])
+    await msgutils.edit_embed(bot, oldem, em)
 
     titles = []
     images = []
@@ -72,6 +75,9 @@ async def wolfram(bot, msg, reg):
             pod_img.paste(im, (item_padding,y_offset))
             y_offset += im.size[1]+item_padding
         images.append(pod_img);
+
+    em = Embed(title=query, description="Combining Images", colour=miscutils.colours['orange'])
+    await msgutils.edit_embed(bot, oldem, em)
 
     # chained_imgs = list(itertools.chain.from_iterable(images))
     #

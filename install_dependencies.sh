@@ -6,3 +6,7 @@ pip3 install requests
 pip3 install greenlet
 pip3 install wolframalpha
 pip3 install PyDictionary
+pip3 install pyimgur
+pip3 install wolframalpha
+pip3 install pillow
+pip3 install googletrans

@@ -2,7 +2,7 @@
 # @Date:   10:01:28, 03-Nov-2018
 # @Filename: strutils.py
 # @Last modified by:   edl
-# @Last modified time: 00:08:29, 11-Oct-2019
+# @Last modified time: 20:59:46, 12-Oct-2019
 
 from bot.handlers import bot_prefix
 import re

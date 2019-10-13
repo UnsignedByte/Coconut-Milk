@@ -2,7 +2,7 @@
 # @Date:   19:01:44, 02-Apr-2018
 # @Filename: help.py
 # @Last modified by:   edl
-# @Last modified time: 15:42:24, 11-Oct-2019
+# @Last modified time: 13:42:25, 12-Oct-2019
 
 
 import asyncio
@@ -33,7 +33,7 @@ with open("README.md", "r") as f:
             else:
                 helpvals[lastheader].append('> '+l.replace('`', ''))
 
-helpembed = Embed(colour=miscutils.colours['purple'])
+helpembed = Embed(colour=miscutils.colours['orange'])
 
 desc = "```markdown"
 
