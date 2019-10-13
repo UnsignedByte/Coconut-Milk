@@ -10,3 +10,4 @@ pyimgur
 wolframalpha
 pillow
 googletrans
+urbandict
