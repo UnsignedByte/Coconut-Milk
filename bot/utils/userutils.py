@@ -2,7 +2,7 @@
 # @Date:   20:17:56, 04-Nov-2018
 # @Filename: memberutils.py
 # @Last modified by:   edl
-# @Last modified time: 12:34:24, 13-Oct-2019
+# @Last modified time: 16:18:52, 13-Oct-2019
 
 import asyncio
 from bot.utils import datautils
@@ -23,12 +23,11 @@ def get_user_color(user):
         return 0x3a71c1
 
 def nickname(usr, srv):
-    if not srv:
-        return usr.name
-    n = srv.get_member(usr.id)
-    if not n:
-        return usr.name
-    return n.nick
+    if srv:
+        n = srv.get_member(usr.id)
+        if n and n.nick:
+            return n.nick
+    return usr.name
 
 def get_user(bot, guild, selector, userlist=None):
     reg = re.compile(r'(?:<@!?(?P<id>[0-9]+)>)').match(selector)
