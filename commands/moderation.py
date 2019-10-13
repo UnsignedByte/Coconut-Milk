@@ -2,7 +2,7 @@
 # @Date:   11:04:49, 05-Apr-2018
 # @Filename: settings.py
 # @Last modified by:   edl
-# @Last modified time: 10:13:03, 13-Oct-2019
+# @Last modified time: 12:32:04, 13-Oct-2019
 
 
 import json
@@ -71,8 +71,11 @@ async def purge(bot, msg, reg):
     if perms.manage_messages or is_mod(bot, msg.author):
         await msg.delete()
         num = int(reg.group('num'));
+        usr = reg.group('user')
+        if usr:
+            usr = userutils.get_user(bot, msg.guild, usr)
         def check(message):
-            return not msg.mentions or msg.mentions[0].id == message.author.id
+            return not usr or usr.id == message.author.id
         await msg.channel.purge(limit=num, check=check)
         await msg.channel.send("**{}** has cleared the last **{}** messages!".format(msg.author.mention,num-1), delete_after=2)
     else:
@@ -116,18 +119,26 @@ async def mod(bot, msg, reg):
 
 async def ban(bot, msg, reg):
     perms = msg.channel.permissions_for(msg.author)
+    usr = userutils.get_user(bot, msg.guild, reg.group('user'))
+    if not usr:
+        await msg.channel.send('Could not find a user named `{}`. Make sure the name is spelt correctly.'.format(reg.group('user')))
     if perms.ban_members:
-        await msg.guild.ban(msg.mentions[0], reason=reg.group('reason'), delete_message_days=reg.group('days') if reg.group('days') else 0)
+        await msg.guild.ban(usr, reason=reg.group('reason'), delete_message_days=reg.group('days') if reg.group('days') else 0)
 async def unban(bot, msg, reg):
     perms = msg.channel.permissions_for(msg.author)
+    bans = await msg.guild.bans()
+    bans = [x.user for x in bans]
+    usr = userutils.get_user(bot, msg.guild, reg.group('user'), userlist=bans)
+    if not usr:
+        await msg.channel.send('Could not find a user named `{}`. Make sure the name is spelt correctly.'.format(reg.group('user')))
     if perms.ban_members:
-        await msg.guild.unban(msg.mentions[0], reason=reg.group('reason'))
+        await msg.guild.unban(usr, reason=reg.group('reason'))
 
 
 message_handler.add_public(settings, r'settings (?P<sub>enable|disable) (?P<command>.+?) (?P<channels>all|(?:channel_mention )+)')
-message_handler.add_public(purge, r'(?:purge|clear) (?P<num>[0-9]+) user_mention?')
-message_handler.add_public(ban, r'(?:ban) user_mention (?P<reason>.+?)? (?P<days>[0-7])?')
-message_handler.add_public(unban, r'(?:unban) user_mention (?P<reason>.+)?')
+message_handler.add_public(purge, r'(?:purge|clear) (?P<num>[0-9]+) (?P<user>.+)?')
+message_handler.add_public(ban, r'(?:ban) (?P<user>.+) (?P<reason>.+?)? (?P<days>[0-7])?')
+message_handler.add_public(unban, r'(?:unban) (?P<user>.+) (?P<reason>.+)?')
 
 message_handler.add_private(save, r'save')
 message_handler.add_private(execute, r'exec [.\n]+')

@@ -2,12 +2,13 @@
 # @Date:   20:17:56, 04-Nov-2018
 # @Filename: memberutils.py
 # @Last modified by:   edl
-# @Last modified time: 10:22:50, 13-Oct-2019
+# @Last modified time: 12:34:24, 13-Oct-2019
 
 import asyncio
 from bot.utils import datautils
 import discord
 import re
+import difflib
 
 async def get_owner(bot):
     return (await bot.application_info()).owner
@@ -24,10 +25,23 @@ def get_user_color(user):
 def nickname(usr, srv):
     if not srv:
         return usr.name
-    n = srv.get_member(usr.id).nick
+    n = srv.get_member(usr.id)
     if not n:
         return usr.name
-    return n
+    return n.nick
 
-def get_user(selector):
-    re.match(re.compile)
+def get_user(bot, guild, selector, userlist=None):
+    reg = re.compile(r'(?:<@!?(?P<id>[0-9]+)>)').match(selector)
+    if reg:
+        return bot.get_user(int(reg.group('id')))
+    else:
+        if not userlist:
+            userlist = guild.members
+        namelist = list(map(lambda x:nickname(x, guild).lower(), userlist))
+        selector = selector.lower()
+        closest = difflib.get_close_matches(selector, namelist, n=1)
+        closest.extend([x for x in namelist if selector in x])
+        if closest:
+            return userlist[namelist.index(closest[0])]
+        else:
+            return None

@@ -2,7 +2,7 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 10:22:20, 13-Oct-2019
+# @Last modified time: 14:54:55, 13-Oct-2019
 
 # from pprint import pformat
 import asyncio
@@ -43,7 +43,7 @@ async def define(bot, msg, reg):
         return
     em = Embed(title=x.title(), colour=miscutils.colours['orange'])
     for type in meaning:
-        desc = ''.join('{}. {}\n'.format(i, meaning[type][i]) for i in range(len(meaning[type])));
+        desc = ''.join('{}. {}\n'.format(i+1, meaning[type][i]) for i in range(len(meaning[type])));
         em.add_field(name=type, value=desc, inline=False)
     await msgutils.send_embed(bot, msg, em)
 
