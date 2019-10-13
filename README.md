@@ -15,22 +15,18 @@ Remember to delete `{}` and `()`.
 
 | **Name** | **Usage** | **Description** | **Aliases** |
 |:-:|:-:|:-:|:-:|
-|help|`.help (page)`|Displays help information. If no valid page number is given, the first page will be displayed.|`help`|
+|help|`.help`|DMs user with help information.|`help`|
 |info|`.info`|Displays general information about the bot.|`info`, `hi`|
-|close|`.close`|Shut down the bot and save all data.|`close`, `shutdown`|
-|save|`.save`|Save all data.|`save`|
-|settings|`.settings {args}`|Look at Settings Subcommands.|`settings`|
 |purge|`.purge {n}`|Clears the last `n` messages.|`clear`, `purge`|
-|define|`.define {word}`|Retrieves the definition of a word from Merriam-Webster.|`define`, `dictionary`|
+|define|`.define {word}`|Retrieves the definition of a word from the dictionary.|`define`, `dictionary`|
+|urban|`.urban {phrase}`|Retrieves urbandictionary definition of a phrase.|`urban`, `urbandict`|
+|translate|`.translate {phrase (language)`|Google translates a phrase to an optional language (defaults to english).|`translate`, `trans`|
 |wolfram|`.wolfram {query}`|Queries wolframalpha and returns an image containing the result|`wolfram`, `wolframalpha`, `wa`|
 
-#### Settings Subcommands
+### Moderation
 
 | **Name** | **Usage** | **Description** | **Aliases** |
-|:-:|:-:|:-:|:-:|
-|settings|`.settings {subcommand} (args)`|Settings for the bot. Requires the `manage server` permission. | `settings`|
-|disable|`.settings disable {cmd} {channel(s)}`|Disables a command in the specified channels.|`disable`|
-|enable|`.settings enable {cmd} {channel(s)}`|Enables a command in the specified channels.|`enable`|
+|settings|`.settings {enable/disable} {channel(s)}`|Enables or disables commands in the specified channels. `all` will specify all channels.|`settings`|
 
 ### Fun
 | **Name** | **Usage** | **Description** | **Aliases** |
