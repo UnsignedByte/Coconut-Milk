@@ -2,14 +2,14 @@
 # @Date:   11:04:49, 05-Apr-2018
 # @Filename: settings.py
 # @Last modified by:   edl
-# @Last modified time: 19:06:15, 15-Oct-2019
+# @Last modified time: 19:08:47, 15-Oct-2019
 
 
 import json
 import asyncio
 from bot.utils import msgutils, strutils, datautils, userutils, miscutils, cmdutils
 from bot.handlers import message_handler, bot_prefix
-from discord import Embed, NotFound, HTTPException
+from discord import Embed, HTTPException, TextChannel
 import re
 import traceback
 import greenlet
@@ -23,7 +23,7 @@ async def settings(bot, msg, reg):
         sub = reg.group('sub');
         channels = reg.group('channels')
         if channels == 'all':
-            channels = list(n for n in msg.guild.channels if isinstance(n, discord.TextChannel))
+            channels = list(n for n in msg.guild.channels if isinstance(n, TextChannel))
         else:
             channels = msg.channel_mentions
         for channel in channels:
