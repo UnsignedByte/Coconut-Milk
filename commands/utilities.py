@@ -2,7 +2,7 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 22:06:14, 22-Oct-2019
+# @Last modified time: 22:07:39, 22-Oct-2019
 
 # from pprint import pformat
 import asyncio
@@ -98,4 +98,4 @@ message_handler.add(info, r'hi|info')
 message_handler.add(urban, r'urban(?:dict)? (?P<word>.+)')
 message_handler.add(define, r'(?:define|dictionary) (?P<word>.+)')
 message_handler.add(translate, r'(?:trans(?:late)?) ((?P<word>.+?) (?P<lang>[a-zA-Z\-]+?)?)')
-message_handler.add(latex, r'latex \$*(?P<latex>.+?)\$*')
+message_handler.add(latex, r'(?:(?:la)?tex) \$*(?P<latex>.+?)\$*')

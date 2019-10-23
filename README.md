@@ -22,6 +22,7 @@ Remember to delete `{}` and `()`.
 |urban|`.urban {phrase}`|Retrieves urbandictionary definition of a phrase.|`urban`, `urbandict`|
 |translate|`.translate {phrase (language)`|Google translates a phrase to an optional language (defaults to english).|`translate`, `trans`|
 |wolfram|`.wolfram {query}`|Queries wolframalpha and returns an image containing the result|`wolfram`, `wolframalpha`, `wa`|
+|latex|`.latex {LaTeX}`|Renders simple latex ($ optional)|`latex`, `tex`|
 
 ### Moderation
 
