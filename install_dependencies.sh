@@ -11,3 +11,4 @@ pip install wolframalpha
 pip install pillow
 pip install googletrans
 pip install urbandict
+pip install sympy

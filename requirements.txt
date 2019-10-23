@@ -11,3 +11,4 @@ wolframalpha
 pillow
 googletrans
 urbandict
+sympy
