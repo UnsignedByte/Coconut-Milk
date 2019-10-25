@@ -27,6 +27,7 @@ Remember to delete `{}` and `()`.
 ### Moderation
 
 | **Name** | **Usage** | **Description** | **Aliases** |
+|:-:|:-:|:-:|:-:|
 |settings|`.settings {enable/disable} {channel(s)}`|Enables or disables commands in the specified channels. `all` will specify all channels.|`settings`|
 
 ### Fun
