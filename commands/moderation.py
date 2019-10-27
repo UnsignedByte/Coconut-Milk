@@ -2,7 +2,7 @@
 # @Date:   11:04:49, 05-Apr-2018
 # @Filename: settings.py
 # @Last modified by:   edl
-# @Last modified time: 19:08:47, 15-Oct-2019
+# @Last modified time: 12:59:46, 27-Oct-2019
 
 
 import json
@@ -83,17 +83,17 @@ async def purge(bot, msg, reg):
         await msgutils.send_embed(bot, msg, em, delete_after=2)
 
 async def save(bot, msg, reg):
-    if await userutils.is_mod(bot, msg.author):
+    if await (bot, msg.author):
         await msg.channel.trigger_typing();
         datautils.save_data();
         await msg.channel.send('Data saved!', delete_after=0.5);
 
 async def data(bot, msg, reg):
-    if (await userutils.is_mod(bot, msg.author)):
+    if (await (bot, msg.author)):
         await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.get_data(), indent=2), prefix='```json\n',suffix='```')
 
 async def find(bot, msg, reg):
-    if (await userutils.is_mod(bot, msg.author)):
+    if (await (bot, msg.author)):
         path = reg.group('path');
         if not path:
             await msg.channel.send('`' + str(list(datautils.get_data().keys())) + '`')
@@ -101,7 +101,7 @@ async def find(bot, msg, reg):
         await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.nested_get(*miscutils.list2int(path.split())), indent=2), prefix='```json\n',suffix='```')
 
 async def delete(bot, msg, reg):
-    if (await userutils.is_mod(bot, msg.author)):
+    if (await (bot, msg.author)):
         keys = miscutils.list2int(reg.group('path').split())
         if isinstance(datautils.nested_get(*keys[:-1]), dict):
             datautils.nested_pop(*keys)

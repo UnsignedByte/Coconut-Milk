@@ -2,7 +2,7 @@
 # @Date:   06:50:24, 02-May-2018
 # @Filename: handlers.py
 # @Last modified by:   edl
-# @Last modified time: 18:00:06, 11-Oct-2019
+# @Last modified time: 13:11:10, 27-Oct-2019
 
 bot_data = {}
 bot_prefix = '.'
@@ -53,12 +53,12 @@ async def on_message(bot, msg):
         try:
             if isinstance(c, discord.abc.PrivateChannel):
                 for a in private_message_handlers:
-                    reg = re.compile(a).match(msg.content)
+                    reg = re.compile(a, re.DOTALL).match(msg.content)
                     if reg:
                         await private_message_handlers[a](bot, msg, reg)
             else:
                 for a in public_message_handlers:
-                    reg = re.compile(a).match(msg.content)
+                    reg = re.compile(a, re.DOTALL).match(msg.content)
                     if reg:
                         commandname = public_message_handlers[a].__name__;
                         if cmdutils.allowed_command(commandname,c):
