@@ -2,7 +2,7 @@
 # @Date:   06:50:24, 02-May-2018
 # @Filename: handlers.py
 # @Last modified by:   edl
-# @Last modified time: 13:11:10, 27-Oct-2019
+# @Last modified time: 22:40:55, 27-Oct-2019
 
 bot_data = {}
 bot_prefix = '.'
@@ -65,7 +65,7 @@ async def on_message(bot, msg):
                             await public_message_handlers[a](bot, msg, reg)
                             break
                         else:
-                            await c.send('The {} command is disabled in this channel.'.format(commandname))
+                            await c.send('The {} command is disabled in this channel.'.format(commandname), deleteafter=1)
         except Exception as e:
             em = discord.Embed(title="Unknown Error",
                                description="An unknown error occurred. Trace:\n%s" % e, colour=0xd32323)
