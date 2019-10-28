@@ -2,7 +2,7 @@
 # @Date:   11:04:49, 05-Apr-2018
 # @Filename: settings.py
 # @Last modified by:   edl
-# @Last modified time: 12:59:46, 27-Oct-2019
+# @Last modified time: 22:26:10, 27-Oct-2019
 
 
 import json
@@ -31,7 +31,7 @@ async def settings(bot, msg, reg):
         await msg.channel.send('Command `{}` has been {}d in {}'.format(command, sub, ', '.join(map(lambda x:x.mention,  channels))))
 
 async def execute(bot, msg, reg):
-    if is_mod(bot, msg.author):
+    if userutils.is_mod(bot, msg.author):
         #From https://stackoverflow.com/a/46087477/5844752
         class GreenAwait:
             def __init__(self, child):
@@ -68,7 +68,7 @@ async def execute(bot, msg, reg):
 
 async def purge(bot, msg, reg):
     perms = msg.channel.permissions_for(msg.author)
-    if perms.manage_messages or is_mod(bot, msg.author):
+    if perms.manage_messages or userutils.is_mod(bot, msg.author):
         await msg.delete()
         num = int(reg.group('num'));
         usr = reg.group('user')
