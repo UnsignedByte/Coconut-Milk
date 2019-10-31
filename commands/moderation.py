@@ -2,7 +2,7 @@
 # @Date:   11:04:49, 05-Apr-2018
 # @Filename: settings.py
 # @Last modified by:   edl
-# @Last modified time: 22:26:10, 27-Oct-2019
+# @Last modified time: 18:10:36, 30-Oct-2019
 
 
 import json
@@ -31,7 +31,7 @@ async def settings(bot, msg, reg):
         await msg.channel.send('Command `{}` has been {}d in {}'.format(command, sub, ', '.join(map(lambda x:x.mention,  channels))))
 
 async def execute(bot, msg, reg):
-    if userutils.is_mod(bot, msg.author):
+    if (await userutils.is_mod(bot, msg.author)):
         #From https://stackoverflow.com/a/46087477/5844752
         class GreenAwait:
             def __init__(self, child):
@@ -62,13 +62,13 @@ async def execute(bot, msg, reg):
                 await future
 
         try:
-            out = await aexec('import asyncio\nasync def run_exec():\n\t'+'\t'.join(re.search(r'`(?P<in>``)?(?P<body>(.?\s?)*)(?(in)```|`)', msg.content).group("body").strip().splitlines(True))+'\ngawait(run_exec())')
+            out = await aexec('import asyncio\nasync def run_exec():\n\t'+'\t'.join(reg.group("body").strip().splitlines(True))+'\ngawait(run_exec())')
         except Exception:
             await msgutils.send_embed(bot, msg, Embed(title="Output", description=traceback.format_exc(), colour=miscutils.colours['red']))
 
 async def purge(bot, msg, reg):
     perms = msg.channel.permissions_for(msg.author)
-    if perms.manage_messages or userutils.is_mod(bot, msg.author):
+    if perms.manage_messages or (await userutils.is_mod(bot, msg.author)):
         await msg.delete()
         num = int(reg.group('num'));
         usr = reg.group('user')
@@ -83,17 +83,17 @@ async def purge(bot, msg, reg):
         await msgutils.send_embed(bot, msg, em, delete_after=2)
 
 async def save(bot, msg, reg):
-    if await (bot, msg.author):
+    if (await userutils.is_mod(bot, msg.author)):
         await msg.channel.trigger_typing();
         datautils.save_data();
         await msg.channel.send('Data saved!', delete_after=0.5);
 
 async def data(bot, msg, reg):
-    if (await (bot, msg.author)):
+    if (await userutils.is_mod(bot, msg.author)):
         await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.get_data(), indent=2), prefix='```json\n',suffix='```')
 
 async def find(bot, msg, reg):
-    if (await (bot, msg.author)):
+    if (await userutils.is_mod(bot, msg.author)):
         path = reg.group('path');
         if not path:
             await msg.channel.send('`' + str(list(datautils.get_data().keys())) + '`')
@@ -101,7 +101,7 @@ async def find(bot, msg, reg):
         await msgutils.send_large_message(bot, msg.channel, json.dumps(datautils.nested_get(*miscutils.list2int(path.split())), indent=2), prefix='```json\n',suffix='```')
 
 async def delete(bot, msg, reg):
-    if (await (bot, msg.author)):
+    if (await userutils.is_mod(bot, msg.author)):
         keys = miscutils.list2int(reg.group('path').split())
         if isinstance(datautils.nested_get(*keys[:-1]), dict):
             datautils.nested_pop(*keys)
@@ -141,7 +141,7 @@ message_handler.add_public(ban, r'(?:ban) (?P<user>.+) (?P<reason>.+?)? (?P<days
 message_handler.add_public(unban, r'(?:unban) (?P<user>.+) (?P<reason>.+)?')
 
 message_handler.add_private(save, r'save')
-message_handler.add_private(execute, r'exec [.\n]+')
+message_handler.add_private(execute, r'exec (?P<in>``)?`(?P<body>[^`].*?[^`])(?(in)```|`)')
 message_handler.add_private(data, r'data')
 message_handler.add_private(delete, r'(?:rm|remove|del(?:ete)?) (?P<path>.*)')
 message_handler.add_private(find, r'find (?P<path>.*)')
