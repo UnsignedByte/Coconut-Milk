@@ -2,7 +2,7 @@
 # @Date:   18:59:11, 18-Apr-2018
 # @Filename: utilities.py
 # @Last modified by:   edl
-# @Last modified time: 22:07:39, 22-Oct-2019
+# @Last modified time: 11:39:46, 02-Jan-2020
 
 # from pprint import pformat
 import asyncio
@@ -15,7 +15,7 @@ from PyDictionary import PyDictionary
 from googletrans import Translator
 import urbandict
 import pyimgur
-import sympy
+# import sympy
 from PIL import ImageFile, Image
 
 dictionary = PyDictionary()
@@ -72,30 +72,30 @@ async def translate(bot, msg, reg):
     em.add_field(name=miscutils.lang_codes[res.dest.lower()], value=res.text, inline=True)
     await msgutils.send_embed(bot, msg, em)
 
-async def latex(bot, msg, reg):
-    sympy.preview(r'$${}$$'.format(reg.group('latex')), viewer='file', filename='data/latex_save.png', euler=True)
-
-    fp = open("data/latex_save.png", "rb")
-    p = ImageFile.Parser()
-    while 1:
-        s = fp.read(1024)
-        if not s:
-            break
-        p.feed(s)
-    im = p.close()
-    minImgSize = 50;
-    if im.size[0] < minImgSize or im.size[1] < minImgSize:
-        im = im.resize(tuple(round(x*minImgSize/min(im.size)) for x in im.size), resample=Image.BICUBIC)
-    im.save("data/latex_save.png")
-
-    res_img = imgur_client.upload_image("data/latex_save.png", title='LaTeX')
-
-    em = Embed(title='LaTeX', url=res_img.link, colour = miscutils.colours['orange'])
-    em.set_image(url=res_img.link)
-    await msgutils.send_embed(bot, msg, em)
+# async def latex(bot, msg, reg):
+#     sympy.preview(r'$${}$$'.format(reg.group('latex')), viewer='file', filename='data/latex_save.png', euler=True)
+#
+#     fp = open("data/latex_save.png", "rb")
+#     p = ImageFile.Parser()
+#     while 1:
+#         s = fp.read(1024)
+#         if not s:
+#             break
+#         p.feed(s)
+#     im = p.close()
+#     minImgSize = 50;
+#     if im.size[0] < minImgSize or im.size[1] < minImgSize:
+#         im = im.resize(tuple(round(x*minImgSize/min(im.size)) for x in im.size), resample=Image.BICUBIC)
+#     im.save("data/latex_save.png")
+#
+#     res_img = imgur_client.upload_image("data/latex_save.png", title='LaTeX')
+#
+#     em = Embed(title='LaTeX', url=res_img.link, colour = miscutils.colours['orange'])
+#     em.set_image(url=res_img.link)
+#     await msgutils.send_embed(bot, msg, em)
 
 message_handler.add(info, r'hi|info')
 message_handler.add(urban, r'urban(?:dict)? (?P<word>.+)')
 message_handler.add(define, r'(?:define|dictionary) (?P<word>.+)')
 message_handler.add(translate, r'(?:trans(?:late)?) ((?P<word>.+?) (?P<lang>[a-zA-Z\-]+?)?)')
-message_handler.add(latex, r'(?:(?:la)?tex) \$*(?P<latex>.+?)\$*')
+# message_handler.add(latex, r'(?:(?:la)?tex) \$*(?P<latex>.+?)\$*')
