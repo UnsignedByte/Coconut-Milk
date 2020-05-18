@@ -135,13 +135,14 @@ async def unban(bot, msg, reg):
         await msg.guild.unban(usr, reason=reg.group('reason'))
 
 
+message_handler.add(execute, r'exec (?P<in>``)?`(?P<body>[^`].*?[^`])(?(in)```|`)')
+
 message_handler.add_public(settings, r'settings (?P<sub>enable|disable) (?P<command>.+?) (?P<channels>all|(?:channel_mention )+)')
 message_handler.add_public(purge, r'(?:purge|clear) (?P<num>[0-9]+) (?P<user>.+)?')
 message_handler.add_public(ban, r'(?:ban) (?P<user>.+) (?P<reason>.+?)? (?P<days>[0-7])?')
 message_handler.add_public(unban, r'(?:unban) (?P<user>.+) (?P<reason>.+)?')
 
 message_handler.add_private(save, r'save')
-message_handler.add_private(execute, r'exec (?P<in>``)?`(?P<body>[^`].*?[^`])(?(in)```|`)')
 message_handler.add_private(data, r'data')
 message_handler.add_private(delete, r'(?:rm|remove|del(?:ete)?) (?P<path>.*)')
 message_handler.add_private(find, r'find (?P<path>.*)')
